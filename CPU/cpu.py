@@ -3,7 +3,7 @@
 #Programming Assignment #1, Instruction Processing
 
 class CPU:
-    def __init__(self, pc, next_pc, memory, regs):
+    def __init__(self):
         pc = 0
         next_pc = 0
         memory = [0] * 65536
@@ -11,7 +11,7 @@ class CPU:
 
 
 class Instruction:
-    def __init__(self, opcode, Rd, Rs1, Rs2, immed):
+    def __init__(self):
         opcode = 0
         Rd = 0
         Rs1 = 0
