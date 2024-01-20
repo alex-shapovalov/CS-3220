@@ -17,3 +17,8 @@ class Instruction:
         Rs1 = 0
         Rs2 = 0
         immed = 0
+
+def build_instruction(opcode, Rd, Rs1, Rs2, immed):
+    insrt = opcode << 28
+    return_int = 0
+    return return_int
