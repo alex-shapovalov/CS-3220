@@ -6,6 +6,6 @@ beq r3, r4, 3
 addi r8, r0, 10 
 jal r0, 2
 addi r8, r0, 30
-sw   r3, 10(r8)
-lw   r5, 10(r8)
+sw r3, 10(r8)
+lw r5, 10(r8)
 return

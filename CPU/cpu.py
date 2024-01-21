@@ -21,14 +21,17 @@ class CPU:
         memory = [0] * 65536
         regs = [0] * 16
 
+cpu = CPU(0, 1)
 
 class Instruction:
-    def __init__(self, opcode, Rd, Rs1, Rs2, immed):
-        self.opcode = opcode
-        self.Rd = Rd #destination register
-        self.Rs1 = Rs1 #1st source register
-        self.Rs2 = Rs2 #2nd source register
-        self.immed = immed #immediate value
+    def __init__(self, instr):
+        opcode = 0 #actual instruction
+        Rd = 0 #destination register
+        Rs1 = 0 #1st source register
+        Rs2 = 0 #2nd source register
+        immed = 0 #immediate value
+
+        #TODO: deal with each instruction
 
 def build_instruction(opcode, Rd, Rs1, Rs2, immed):
     instr = opcode << 28
@@ -39,11 +42,11 @@ def build_instruction(opcode, Rd, Rs1, Rs2, immed):
     if Rs2 is not None:
         instr = instr + (Rs2 << 16)
     if immed is not None:
+        #TODO: two's compliment negative values
         instr = instr + immed
     return instr
 
 def main():
-    cpu = CPU(0, 1)
     count = 0
     #read from file
         #read until first space, this is the opcode, if noop or return, nextline
@@ -65,12 +68,12 @@ def main():
             print("Syntax error: no return at eof")
         elif opcode in ["add", "addi", "beq", "jal", "lw", "sw", "sub", "subi", "jalr"]:
             #continue reading the rest of the instruction
-            print(tail)
+            print(tail.rstrip('\n'))
 
             # build each line
 
             # put everything into memory
-            pass
+
         else:
             print("Syntax error: opcode line " + str(n))
             a = line_count + 1
