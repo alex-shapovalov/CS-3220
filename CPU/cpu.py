@@ -60,6 +60,7 @@ def main():
     while a < line_count - 1:
         if opcode == "noop":
             i = build_instruction(NOOP, None, None, None, None)
+            #TODO: change depending on what line we are on
             cpu.memory[100] = i
             pass
         elif a == line_count - 2 and lines[a + 1].rstrip('\n') != "return":
