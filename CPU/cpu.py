@@ -2,6 +2,14 @@
 #CS 5220
 #Programming Assignment #1, Instruction Processing
 
+class CPU:
+    def __init__(self):
+        self.pc = 0 #index in memory array
+        self.next_pc = 0
+        self.memory = [0] * 65536
+        self.regs = [0] * 16
+
+cpu = CPU()
 NOOP = 0
 ADD = 1
 ADDI = 2
@@ -13,13 +21,6 @@ RETURN = 7
 SUB = 9
 SUBI = 10
 JALR = 12
-
-class CPU:
-    def __init__(self):
-        self.pc = 0 #index in memory array
-        self.next_pc = 0
-        self.memory = [0] * 65536
-        self.regs = [0] * 16
 
 class Instruction:
     def __init__(self, instr):
@@ -46,8 +47,6 @@ def build_instruction(opcode, Rd, Rs1, Rs2, immed):
     return instr
 
 def main():
-    cpu = CPU()
-
     file = open("assembly.txt", "r")
     lines = file.readlines()
     line_count = len(lines)
