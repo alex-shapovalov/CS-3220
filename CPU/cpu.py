@@ -15,21 +15,19 @@ SUBI = 10
 JALR = 12
 
 class CPU:
-    def __init__(self, pc, next_pc):
-        self.pc = pc #index in memory array
-        self.next_pc = pc
-        memory = [0] * 65536
-        regs = [0] * 16
-
-cpu = CPU(0, 1)
+    def __init__(self):
+        self.pc = 0 #index in memory array
+        self.next_pc = 0
+        self.memory = [0] * 65536
+        self.regs = [0] * 16
 
 class Instruction:
     def __init__(self, instr):
-        opcode = 0 #actual instruction
-        Rd = 0 #destination register
-        Rs1 = 0 #1st source register
-        Rs2 = 0 #2nd source register
-        immed = 0 #immediate value
+        self.opcode = 0 #actual instruction
+        self.Rd = 0 #destination register
+        self.Rs1 = 0 #1st source register
+        self.Rs2 = 0 #2nd source register
+        self.immed = 0 #immediate value
 
         #TODO: deal with each instruction
 
@@ -44,13 +42,11 @@ def build_instruction(opcode, Rd, Rs1, Rs2, immed):
     if immed is not None:
         #TODO: two's compliment negative values
         instr = instr + immed
+    print(instr)
     return instr
 
 def main():
-    count = 0
-    #read from file
-        #read until first space, this is the opcode, if noop or return, nextline
-        #comma seperated reading
+    cpu = CPU()
 
     file = open("assembly.txt", "r")
     lines = file.readlines()
@@ -63,11 +59,13 @@ def main():
     opcode, sep, tail = opcode.partition(' ')
     while a < line_count - 1:
         if opcode == "noop":
+            i = build_instruction(NOOP, None, None, None, None)
+            cpu.memory[100] = i
             pass
         elif a == line_count - 2 and lines[a + 1].rstrip('\n') != "return":
             print("Syntax error: no return at eof")
         elif opcode in ["add", "addi", "beq", "jal", "lw", "sw", "sub", "subi", "jalr"]:
-            #continue reading the rest of the instruction
+            #TODO: continue reading the rest of the instruction
             print(tail.rstrip('\n'))
 
             # build each line
@@ -82,6 +80,6 @@ def main():
         opcode = lines[n].rstrip('\n')
         opcode, sep, tail = opcode.partition(' ')
 
-    #for loop with amount of lines inputted
+    #while loop going through memory from 100 until reaching 0
 
 main()
