@@ -32,10 +32,13 @@ cpu = CPU(0, 1)
 class Instruction:
     def __init__(self, instr):
         self.opcode = instr >> 28 #actual instruction
-        self.Rd = 0 #destination register
-        self.Rs1 = 0 #1st source register
-        self.Rs2 = 0 #2nd source register
-        self.immed = 0 #immediate value
+        self.Rd = (instr >> 24) & 0b1111 #destination register
+        self.Rs1 = (instr >> 20) & 0b1111 #1st source register
+        self.Rs2 = (instr >> 16) & 0b1111 #2nd source register
+        self.immed = instr >> 16 #immediate value
+
+        values = [self.opcode, self.Rd, self.Rs1, self.Rs2, self.immed]
+        print(values)
 
         #convert to binary:
         #binary = '{:032b}'.format(instr)
