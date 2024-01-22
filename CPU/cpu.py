@@ -7,13 +7,14 @@
 import re
 
 class CPU:
-    def __init__(self):
-        self.pc = 0 #index in memory array
-        self.next_pc = 0
+    def __init__(self, pc, next_pc):
+        self.pc = pc #index in memory array
+        self.next_pc = next_pc
         self.memory = [0] * 65536
         self.regs = [0] * 16
 
-cpu = CPU()
+#instantiate cpu class and assign constant ints to opcodes
+cpu = CPU(0, 1)
 NOOP = 0
 ADD = 1
 ADDI = 2
@@ -37,17 +38,7 @@ class Instruction:
         #TODO: deal with each instruction
 
 def build_instruction(opcode, Rd, Rs1, Rs2, immed):
-    instr = opcode << 28
-    if Rd is not None:
-        instr = instr + (Rd << 24)
-    if Rs1 is not None:
-        instr = instr + (Rs1 << 20)
-    if Rs2 is not None:
-        instr = instr + (Rs2 << 16)
-    if immed is not None:
-        #TODO: two's compliment negative values
-        instr = instr + immed
-    print(instr)
+    instr = opcode
     return instr
 
 def main():
@@ -62,7 +53,7 @@ def main():
     values = []
     opcode = lines[n].rstrip('\n')
     opcode, sep, tail = opcode.partition(' ')
-    while a < line_count - 1:
+    while a < line_count:
         values = [int(d) for d in re.findall(r'-?\d+', tail)]
 
         #two special opcodes in their own section
@@ -73,6 +64,8 @@ def main():
         elif opcode == "return":
             i = build_instruction(RETURN, None, None, None, None)
             cpu.memory[a + 100] = i
+            a = line_count
+            break
 
         #error if no return statement
         elif a == line_count - 2 and lines[a + 1].rstrip('\n') != "return":
@@ -127,6 +120,16 @@ def main():
         opcode = lines[n].rstrip('\n')
         opcode, sep, tail = opcode.partition(' ')
 
-    #while loop going through memory from 100 until reaching 0
+    #set pc to 100 and next_pc to 101
+    cpu.pc = 100
+    cpu.next_pc = 101
+
+    #do while loop for the amount of instructions
+    count = 0
+    while count <= a:
+        Instruction(cpu.memory[cpu.pc])
+        cpu.pc = cpu.next_pc
+        cpu.next_pc + 1
+        count += 1
 
 main()
