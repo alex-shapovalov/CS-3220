@@ -2,7 +2,7 @@
 #CS 5220
 #Programming Assignment #1, Instruction Processing
 
-#used to filter .txt strings into workable ints
+#used to filter .txt strings into workable ints without losing negatives
 #https://stackoverflow.com/questions/42751063/python-filter-positive-and-negative-integers-from-string
 import re
 
@@ -35,9 +35,10 @@ class Instruction:
         self.Rs2 = 0 #2nd source register
         self.immed = 0 #immediate value
 
-        #TODO: deal with each instruction
-        binary = '{:032b}'.format(instr)
-        print(self.opcode)
+        #convert to binary:
+        #binary = '{:032b}'.format(instr)
+        #print(binary)
+
         if self.opcode == NOOP:
             pass
         elif self.opcode == ADD:
@@ -72,7 +73,7 @@ def build_instruction(opcode, Rd, Rs1, Rs2, immed):
     if Rs2 is not None:
         instr = instr + (Rs2 << 16)
     if immed is not None:
-        # TODO: figure out 2s compliment here
+        # TODO: 2s compliment here
         instr = instr + immed
     return instr
 
@@ -124,7 +125,6 @@ def main():
             else:
                 i = build_instruction(SW, values[0], values[2], None, values[1])
                 cpu.memory[a + 100] = i
-            values = []
 
         elif opcode in ["addi", "subi"]:
             if opcode == "addi":
