@@ -40,7 +40,6 @@ class Instruction:
         print(binary)
 
 def build_instruction(opcode, Rd, Rs1, Rs2, immed):
-    #TODO: figure out 2s compliment here
     instr = opcode << 28
     if Rd is not None:
         instr = instr + (Rd << 24)
@@ -49,6 +48,7 @@ def build_instruction(opcode, Rd, Rs1, Rs2, immed):
     if Rs2 is not None:
         instr = instr + (Rs2 << 16)
     if immed is not None:
+        # TODO: figure out 2s compliment here
         instr = instr + immed
     return instr
 
