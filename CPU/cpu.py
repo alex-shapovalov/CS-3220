@@ -35,14 +35,14 @@ class Instruction:
         self.Rd = (instr >> 24) & 0b1111 #destination register
         self.Rs1 = (instr >> 20) & 0b1111 #1st source register
         self.Rs2 = (instr >> 16) & 0b1111 #2nd source register
-        self.immed = instr >> 16 #immediate value
+        self.immed = int('{:032b}'.format(instr), 2) & 0xFFFF #immediate value
+
+        # convert to binary:
+        #binary = '{:032b}'.format(instr)
+        #print(binary)
 
         values = [self.opcode, self.Rd, self.Rs1, self.Rs2, self.immed]
         print(values)
-
-        #convert to binary:
-        #binary = '{:032b}'.format(instr)
-        #print(binary)
 
         if self.opcode == NOOP:
             pass
@@ -127,7 +127,7 @@ def main():
                 i = build_instruction(LW, values[0], values[2], None, values[1])
                 cpu.memory[a + 100] = i
             else:
-                i = build_instruction(SW, values[0], values[2], None, values[1])
+                i = build_instruction(SW, None, values[0], values[2], values[1])
                 cpu.memory[a + 100] = i
 
         elif opcode in ["addi", "subi"]:
