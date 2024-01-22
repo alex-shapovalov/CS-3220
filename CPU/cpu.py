@@ -6,7 +6,7 @@
 #https://stackoverflow.com/questions/42751063/python-filter-positive-and-negative-integers-from-string
 import re
 
-#assign constant ints to opcodes
+#assign global constant ints to opcodes
 NOOP = 0
 ADD = 1
 ADDI = 2
