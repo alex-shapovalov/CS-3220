@@ -81,6 +81,8 @@ def main():
         #error if no return statement
         elif a == line_count - 2 and lines[a + 1].rstrip('\n') != "return":
             print("Syntax error: no return at eof")
+            cpu.memory = [0] * 65536
+            break
 
         #grouping like operations
         elif opcode in ["jal", "jalr"]:
@@ -123,6 +125,8 @@ def main():
         else:
             print("Syntax error: opcode line " + str(n))
             a = line_count + 1
+            cpu.memory = [0] * 65536
+            break
 
         #reset for next line
         a += 1
