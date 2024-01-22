@@ -6,15 +6,7 @@
 #https://stackoverflow.com/questions/42751063/python-filter-positive-and-negative-integers-from-string
 import re
 
-class CPU:
-    def __init__(self, pc, next_pc):
-        self.pc = pc #index in memory array
-        self.next_pc = next_pc
-        self.memory = [0] * 65536
-        self.regs = [0] * 16
-
-#instantiate cpu class and assign constant ints to opcodes
-cpu = CPU(0, 1)
+#assign constant ints to opcodes
 NOOP = 0
 ADD = 1
 ADDI = 2
@@ -26,6 +18,16 @@ RETURN = 7
 SUB = 9
 SUBI = 10
 JALR = 12
+
+class CPU:
+    def __init__(self, pc, next_pc):
+        self.pc = pc #index in memory array
+        self.next_pc = next_pc
+        self.memory = [0] * 65536
+        self.regs = [0] * 16
+
+#instantiate global cpu class
+cpu = CPU(0, 1)
 
 class Instruction:
     def __init__(self, instr):
