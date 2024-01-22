@@ -36,9 +36,20 @@ class Instruction:
         self.immed = 0 #immediate value
 
         #TODO: deal with each instruction
+        binary = '{:032b}'.format(instr)
+        print(binary)
 
 def build_instruction(opcode, Rd, Rs1, Rs2, immed):
-    instr = opcode
+    #TODO: figure out 2s compliment here
+    instr = opcode << 28
+    if Rd is not None:
+        instr = instr + (Rd << 24)
+    if Rs1 is not None:
+        instr = instr + (Rs1 << 20)
+    if Rs2 is not None:
+        instr = instr + (Rs2 << 16)
+    if immed is not None:
+        instr = instr + immed
     return instr
 
 def main():
@@ -126,10 +137,10 @@ def main():
 
     #do while loop for the amount of instructions
     count = 0
-    while count <= a:
+    while count < a:
         Instruction(cpu.memory[cpu.pc])
         cpu.pc = cpu.next_pc
-        cpu.next_pc + 1
+        cpu.next_pc += 1
         count += 1
 
 main()
