@@ -88,7 +88,6 @@ def main():
     #read in from file:
     a = 0
     n = 0
-    values = []
     opcode = lines[n].rstrip('\n')
     opcode, sep, tail = opcode.partition(' ')
     while a < line_count:
