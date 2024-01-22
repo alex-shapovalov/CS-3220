@@ -41,8 +41,9 @@ class Instruction:
         #binary = '{:032b}'.format(instr)
         #print(binary)
 
-        values = [self.opcode, self.Rd, self.Rs1, self.Rs2, self.immed]
-        print(values)
+        #values test
+        #values = [self.opcode, self.Rd, self.Rs1, self.Rs2, self.immed]
+        #print(values)
 
         if self.opcode == NOOP:
             pass
