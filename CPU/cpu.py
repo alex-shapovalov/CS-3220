@@ -139,7 +139,7 @@ def main():
     cpu.pc = 100
     cpu.next_pc = 101
 
-    #do while loop for the amount of instructions
+    #while loop for the amount of instructions
     count = 0
     while count < a:
         Instruction(cpu.memory[cpu.pc])
