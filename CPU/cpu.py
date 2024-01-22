@@ -29,7 +29,7 @@ JALR = 12
 
 class Instruction:
     def __init__(self, instr):
-        self.opcode = 0 #actual instruction
+        self.opcode = instr >> 28 #actual instruction
         self.Rd = 0 #destination register
         self.Rs1 = 0 #1st source register
         self.Rs2 = 0 #2nd source register
@@ -37,7 +37,31 @@ class Instruction:
 
         #TODO: deal with each instruction
         binary = '{:032b}'.format(instr)
-        print(binary)
+        print(self.opcode)
+        if self.opcode == NOOP:
+            pass
+        elif self.opcode == ADD:
+            pass
+        elif self.opcode == ADDI:
+            pass
+        elif self.opcode == BEQ:
+            pass
+        elif self.opcode == JAL:
+            pass
+        elif self.opcode == LW:
+            pass
+        elif self.opcode == SW:
+            pass
+        elif self.opcode == RETURN:
+            pass
+        elif self.opcode == SUB:
+            pass
+        elif self.opcode == SUBI:
+            pass
+        elif self.opcode == JALR:
+            pass
+        else:
+            print("Instruction error")
 
 def build_instruction(opcode, Rd, Rs1, Rs2, immed):
     instr = opcode << 28
