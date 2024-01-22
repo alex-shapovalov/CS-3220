@@ -42,8 +42,8 @@ class Instruction:
         #print(binary)
 
         #values test
-        #values = [self.opcode, self.Rd, self.Rs1, self.Rs2, self.immed]
-        #print(values)
+        values = [self.opcode, self.Rd, self.Rs1, self.Rs2, self.immed]
+        print(values)
 
         if self.opcode == NOOP:
             pass
