@@ -49,13 +49,13 @@ class Instruction:
             pass
 
         elif self.opcode == ADD:
-            cpu.regs[self.Rd] = self.Rs1 + self.Rs2
+            cpu.regs[self.Rd] = cpu.regs[self.Rs1] + cpu.regs[self.Rs2]
 
         elif self.opcode == ADDI:
-            cpu.regs[self.Rd] = self.Rs1 + self.immed
+            cpu.regs[self.Rd] = cpu.regs[self.Rs1] + self.immed
 
         elif self.opcode == BEQ:
-            if self.Rs1 == self.Rs2:
+            if cpu.regs[self.Rs1] == cpu.regs[self.Rs2]:
                 cpu.next_pc = cpu.pc + self.immed
             else:
                 pass
@@ -65,7 +65,7 @@ class Instruction:
             cpu.next_pc = cpu.pc + self.immed
 
         elif self.opcode == LW:
-            value = cpu.memory[self.immed + self.Rs2]
+            value = cpu.memory[self.immed + cpu.regs[self.Rs2]]
             cpu.regs[self.Rd] = value
 
         elif self.opcode == SW:
@@ -75,14 +75,14 @@ class Instruction:
             pass
 
         elif self.opcode == SUB:
-            cpu.regs[self.Rd] = self.Rs1 - self.Rs2
+            cpu.regs[self.Rd] = cpu.regs[self.Rs1] - cpu.regs[self.Rs2]
 
         elif self.opcode == SUBI:
-            cpu.regs[self.Rd] = self.Rs1 - self.immed
+            cpu.regs[self.Rd] = cpu.regs[self.Rs1] - self.immed
 
         elif self.opcode == JALR:
             cpu.regs[self.Rd] = cpu.pc + 1
-            cpu.next_pc = self.Rs1 + self.immed
+            cpu.next_pc = cpu.regs[self.Rs1] + self.immed
 
         else:
             print("Instruction error")
