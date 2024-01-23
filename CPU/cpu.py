@@ -42,31 +42,48 @@ class Instruction:
         #print(binary)
 
         #values test
-        values = [self.opcode, self.Rd, self.Rs1, self.Rs2, self.immed]
-        print(values)
+        #values = [self.opcode, self.Rd, self.Rs1, self.Rs2, self.immed]
+        #print(values)
 
         if self.opcode == NOOP:
             pass
+
         elif self.opcode == ADD:
-            pass
+            cpu.regs[self.Rd] = self.Rs1 + self.Rs2
+
         elif self.opcode == ADDI:
-            pass
+            cpu.regs[self.Rd] = self.Rs1 + self.immed
+
         elif self.opcode == BEQ:
-            pass
+            if self.Rs1 == self.Rs2:
+                cpu.next_pc = cpu.pc + self.immed
+            else:
+                pass
+
         elif self.opcode == JAL:
-            pass
+            cpu.regs[self.Rd] = cpu.pc + 1
+            cpu.next_pc = cpu.pc + self.immed
+
         elif self.opcode == LW:
-            pass
+            value = cpu.memory[self.immed + self.Rs2]
+            cpu.regs[self.Rd] = value
+
         elif self.opcode == SW:
-            pass
+            cpu.memory[self.immed + self.Rs2] = self.Rs1
+
         elif self.opcode == RETURN:
             pass
+
         elif self.opcode == SUB:
-            pass
+            cpu.regs[self.Rd] = self.Rs1 - self.Rs2
+
         elif self.opcode == SUBI:
-            pass
+            cpu.regs[self.Rd] = self.Rs1 - self.immed
+
         elif self.opcode == JALR:
-            pass
+            cpu.regs[self.Rd] = cpu.pc + 1
+            cpu.next_pc = self.Rs1 + self.immed
+
         else:
             print("Instruction error")
 
@@ -175,5 +192,8 @@ def main():
         cpu.pc = cpu.next_pc
         cpu.next_pc += 1
         count += 1
+
+    print(cpu.regs)
+    print(cpu.memory[26])
 
 main()
