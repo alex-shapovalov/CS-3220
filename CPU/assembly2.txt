@@ -9,5 +9,5 @@ addi r8, r0, 30
 sw r3, 10(r8)
 lw r5, 10(r8)
 subi r13, r8, 10
-addi r7, r4, -10
+addi r7, r3, -10
 return
