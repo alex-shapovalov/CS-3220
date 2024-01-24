@@ -35,7 +35,7 @@ class Instruction:
         self.Rd = (instr >> 24) & 0b1111 #destination register
         self.Rs1 = (instr >> 20) & 0b1111 #1st source register
         self.Rs2 = (instr >> 16) & 0b1111 #2nd source register
-        self.immed = int('{:032b}'.format(instr), 2) & 0xFFFF #immediate value
+        self.immed = instr & 0xFFFF #immediate value
         #2's compliment implementation
         if (self.immed & (1 << (16 - 1))) != 0:
             self.immed = self.immed - (1 << 16)
