@@ -21,10 +21,10 @@ JALR = 12
 
 class CPU:
     def __init__(self, pc, next_pc):
-        self.pc = pc #index in memory array
-        self.next_pc = next_pc
-        self.memory = [0] * 65536
-        self.regs = [0] * 16
+        self.pc = pc #index in memory
+        self.next_pc = next_pc #next index in memory
+        self.memory = [0] * 65536 #memory
+        self.regs = [0] * 16 #registers
 
 #instantiate global cpu class
 cpu = CPU(0, 1)
@@ -41,11 +41,11 @@ class Instruction:
         #binary = '{:032b}'.format(instr)
         #print(binary)
 
-        #values test
+        #values test:
         #values = [self.opcode, self.Rd, self.Rs1, self.Rs2, self.immed]
         #print(values)
 
-        #cpu reg step by step test
+        #cpu registers step by step test:
         #print(cpu.regs)
 
         if self.opcode == NOOP:
@@ -98,12 +98,14 @@ def build_instruction(opcode, Rd, Rs1, Rs2, immed):
     if Rs2 is not None:
         instr = instr + (Rs2 << 16)
     if immed is not None:
-        # TODO: 2s compliment here
+        #2's compliment implementation
+        if (immed & (1 << (16 - 1))) != 0:
+            immed = immed - (1 << 16)
         instr = instr + immed
     return instr
 
 def main():
-    file = open("assembly.txt", "r")
+    file = open("assembly2.txt", "r")
     lines = file.readlines()
     line_count = len(lines)
     file.close()
@@ -195,7 +197,8 @@ def main():
         cpu.next_pc += 1
         count += 1
 
+    #added some other tests for subi and jalr, using assembly2.txt
     print(cpu.regs)
-    print(cpu.memory[26])
+    print(cpu.memory[40])
 
 main()
