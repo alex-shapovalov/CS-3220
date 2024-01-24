@@ -198,7 +198,7 @@ def main():
         cpu.next_pc += 1
         count += 1
 
-    #added some other tests for subi and jalr, using assembly2.txt
+    #added some other tests for subi, jalr, and negative numbers in assembly2.txt
     print(cpu.regs)
     if file_name == "assembly.txt":
         print(cpu.memory[28])
