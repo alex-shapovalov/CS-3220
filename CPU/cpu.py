@@ -201,7 +201,7 @@ def main():
     #added some other tests for subi, jalr, and negative numbers in assembly2.txt
     print(cpu.regs)
     if file_name == "assembly.txt":
-        print(cpu.memory[28])
+        print(cpu.memory[26])
     elif file_name == "assembly2.txt":
         print(cpu.memory[40])
 
