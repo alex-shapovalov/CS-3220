@@ -105,7 +105,8 @@ def build_instruction(opcode, Rd, Rs1, Rs2, immed):
     return instr
 
 def main():
-    file = open("assembly2.txt", "r")
+    file_name = "assembly2.txt"
+    file = open(file_name, "r")
     lines = file.readlines()
     line_count = len(lines)
     file.close()
@@ -199,6 +200,9 @@ def main():
 
     #added some other tests for subi and jalr, using assembly2.txt
     print(cpu.regs)
-    print(cpu.memory[40])
+    if file_name == "assembly.txt":
+        print(cpu.memory[28])
+    elif file_name == "assembly2.txt":
+        print(cpu.memory[40])
 
 main()
