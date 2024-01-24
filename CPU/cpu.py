@@ -26,7 +26,7 @@ class CPU:
         self.memory = [0] * 65536 #memory
         self.regs = [0] * 16 #registers
 
-#instantiate global cpu class
+#instantiate the global cpu class
 cpu = CPU(0, 1)
 
 class Instruction:
