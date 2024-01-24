@@ -36,6 +36,9 @@ class Instruction:
         self.Rs1 = (instr >> 20) & 0b1111 #1st source register
         self.Rs2 = (instr >> 16) & 0b1111 #2nd source register
         self.immed = int('{:032b}'.format(instr), 2) & 0xFFFF #immediate value
+        #2's compliment implementation
+        if (self.immed & (1 << (16 - 1))) != 0:
+            self.immed = self.immed - (1 << 16)
 
         # convert to binary:
         #binary = '{:032b}'.format(instr)
@@ -98,9 +101,6 @@ def build_instruction(opcode, Rd, Rs1, Rs2, immed):
     if Rs2 is not None:
         instr = instr + (Rs2 << 16)
     if immed is not None:
-        #2's compliment implementation
-        if (immed & (1 << (16 - 1))) != 0:
-            immed = immed - (1 << 16)
         instr = instr + immed
     return instr
 
