@@ -45,7 +45,8 @@ class Instruction:
         #values = [self.opcode, self.Rd, self.Rs1, self.Rs2, self.immed]
         #print(values)
 
-        print(cpu.regs)
+        #cpu reg step by step test
+        #print(cpu.regs)
 
         if self.opcode == NOOP:
             pass
@@ -62,20 +63,18 @@ class Instruction:
             else:
                 pass
 
-        #TODO: fix JAL
         elif self.opcode == JAL:
             cpu.regs[self.Rd] = cpu.pc + 1
             cpu.next_pc = cpu.pc + self.immed
 
         elif self.opcode == LW:
-            value = cpu.memory[self.immed + cpu.regs[self.Rs2]]
-            cpu.regs[self.Rd] = value
+            cpu.regs[self.Rd] = cpu.memory[self.immed + cpu.regs[self.Rs1]]
 
         elif self.opcode == SW:
-            cpu.memory[self.immed + self.Rs2] = self.Rs1
+            cpu.memory[self.immed + cpu.regs[self.Rs2]] = cpu.regs[self.Rs1]
 
         elif self.opcode == RETURN:
-            pass
+            cpu.regs[0] = 0
 
         elif self.opcode == SUB:
             cpu.regs[self.Rd] = cpu.regs[self.Rs1] - cpu.regs[self.Rs2]
@@ -196,6 +195,7 @@ def main():
         cpu.next_pc += 1
         count += 1
 
+    print(cpu.regs)
     print(cpu.memory[26])
 
 main()
