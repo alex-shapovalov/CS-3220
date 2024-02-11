@@ -50,4 +50,6 @@ def main():
 
     #TODO: reads from .txt file
 
+    #TODO: keep track of statistics
+
 main()
