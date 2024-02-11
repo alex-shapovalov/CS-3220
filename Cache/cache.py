@@ -21,7 +21,7 @@ class Cache:
         self.block = [Block(block)] * (cache // block) #create an array of blocks with size block
 
         numSets = (cache // associativity) // block #figure out how many sets we need
-        self.set = {} #sets defined as a dictionary
+        self.set = {} #sets defined as a dictionary, didn't make it its own class because it's simply a grouping of blocks, not its own thing
         z = 0
         for x in range(1, numSets + 1): #creates sets based on block size and associativity, self.sets is a dictionary of 1 or more blocks
             self.set["set " + str(x)] = []
@@ -37,9 +37,17 @@ def writeWord(address, word):
 
 def main():
     addressLength = 16
-    cache = Cache(addressLength, 256, 16, 1, "Null")
+    cache = Cache(addressLength, 1024, 64, 1, "Null")
     memory = [0] * (2 ** addressLength)
 
     print(len(memory), len(cache.block), cache.set)
+
+    #TODO: preload memory with some values
+        #46916 = 101101 1101 000100
+        #13388 = 001101 0001 001100
+
+    #TODO: part 1 algorithm for accessing memory location A
+
+    #TODO: reads from .txt file
 
 main()
