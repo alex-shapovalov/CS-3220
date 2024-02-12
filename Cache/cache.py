@@ -4,9 +4,10 @@
 
 class Block:
     def __init__(self, size):
+        # TODO: bytearrays
+        #value = bytearray(regArray)
         self.block = [0] * size
-        #TODO:
-        self.tag = 0
+        self.tag = -1
         self.clean = True
         self.status = False
 
@@ -31,13 +32,15 @@ class Cache:
                     z += 1
 
 def readWord(address):
-    a = 1
+    #TODO: read 4 bytes at a time, little endian conversion 256^0*mem[value] + 256^1*mem[value] + 256^2*mem[value] ... etc.
+    pass
 def writeWord(address, word):
-    a = 1
+    pass
 
 def main():
     addressLength = 16
     cache = Cache(addressLength, 1024, 64, 1, "Null")
+    #TODO: init memory four bytes init memory[0] is [0,0,0,0], memory[4] is [4,0,0,0], memory[256] is [0,1,0,0]
     memory = [0] * (2 ** addressLength)
 
     print(len(memory), len(cache.block), cache.set)
