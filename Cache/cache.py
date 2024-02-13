@@ -73,11 +73,12 @@ def main():
         line = file.readline()
         operation = line[0]
         if (operation == 'r'):
-            value = [int(d) for d in re.findall(r'-?\d+', line)]
-            readWord(value[0])
+            values = [int(d) for d in re.findall(r'-?\d+', line)]
+            readWord(values[0])
 
         elif (operation == 'w'):
-            pass
+            values = [int(d) for d in re.findall(r'-?\d+', line)]
+            writeWord(values[0], values[1])
 
         else:
             pass
