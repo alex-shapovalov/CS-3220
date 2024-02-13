@@ -6,10 +6,10 @@ class Block:
     def __init__(self, size):
         # TODO: bytearrays
         #value = bytearray(regArray)
-        self.block = [0] * size
+        self.data = bytearray(size)
         self.tag = -1
-        self.clean = True
-        self.status = False
+        self.dirty = False
+        self.valid = False
 
 class Cache:
     def __init__(self, address, cache, block, associativity, write):
@@ -34,6 +34,20 @@ class Cache:
 def readWord(address):
     #TODO: read 4 bytes at a time, little endian conversion 256^0*mem[value] + 256^1*mem[value] + 256^2*mem[value] ... etc.
     pass
+#   from addr, compute the tag t, index i and block offset b
+#   look at the information in the cache for set i (there is only one block in the set)
+#   if the block in set i is valid {
+#      if the tag for set i == t {
+#      // this is a hit
+#         return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
+#      }
+#   }
+#   // this is a miss
+#   compute the range of the desired block in memory: start to start+blocksize-1
+#   read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
+#   set the tag set i to t
+#   return the word at positions b, b+1, b+2, b+3 from the block in set i
+
 def writeWord(address, word):
     pass
 
@@ -51,7 +65,7 @@ def main():
 
     #TODO: part 1 algorithm for accessing memory location A
 
-    #TODO: reads from .txt file
+    #TODO: reads from .txt file (part_one_addresses.txt)
 
     #TODO: keep track of statistics
 
