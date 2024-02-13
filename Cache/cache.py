@@ -61,9 +61,10 @@ def main():
 
     print(len(memory), len(cache.block), cache.set)
 
-    #TODO: preload memory with some values
-        #46916 = 101101 1101 000100
-        #13388 = 001101 0001 001100
+    #46916 = 101101 1101 000100
+    memory[46916] = int('1011011101000100', 2)
+    #13388 = 001101 0001 001100
+    memory[13388] = int('011010001001100', 2)
 
     filename = "part-one-addresses.txt"
 
