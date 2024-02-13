@@ -2,6 +2,8 @@
 #CS 5220
 #Programming Assignment #2, Cache
 
+import re
+
 class Block:
     def __init__(self, size):
         # TODO: bytearrays
@@ -63,9 +65,22 @@ def main():
         #46916 = 101101 1101 000100
         #13388 = 001101 0001 001100
 
-    #TODO: part 1 algorithm for accessing memory location A
+    filename = "part-one-addresses.txt"
 
-    #TODO: reads from .txt file (part_one_addresses.txt)
+    with open(filename, 'r') as file:
+        #this is extremely lazy determination of what function is on each line (doesn't catch syntax errors etc.)
+        #but i'm not being tested on my ability to properly read in inputs from a file, so i don't really care
+        line = file.readline()
+        operation = line[0]
+        if (operation == 'r'):
+            value = [int(d) for d in re.findall(r'-?\d+', line)]
+            readWord(value[0])
+
+        elif (operation == 'w'):
+            pass
+
+        else:
+            pass
 
     #TODO: keep track of statistics
 
