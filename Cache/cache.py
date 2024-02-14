@@ -80,8 +80,12 @@ def main():
     memory[46917] = int('0111', 2)
     memory[46918] = int('0100', 2)
     memory[46919] = int('0100', 2)
+
     #13388 = 001101 0001 001100
-    #memory[13388] = int('0011010001001100', 2)
+    memory[13388] = int('0011', 2)
+    memory[13389] = int('0100', 2)
+    memory[13390] = int('0100', 2)
+    memory[13391] = int('1100', 2)
 
     filename = "part-one-addresses.txt"
 
