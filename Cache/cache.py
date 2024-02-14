@@ -4,6 +4,17 @@
 
 import re
 
+CACHE_SIZE = 1024
+CACHE_BLOCK_SIZE = 64
+ASSOCIATIVITY = 1
+
+def logb2(val):
+    i=0
+    while val > 0:
+        i=i+1
+        val = val >> 1
+    return i-1
+
 class Block:
     def __init__(self, size):
         # TODO: bytearrays
@@ -33,8 +44,12 @@ class Cache:
                     self.set["set " + str(x)].append(self.block[z])
                     z += 1
 
+        self.block_offset = logb2(block)
+        self.tag = logb2(numSets)
+        self.index = self.block_offset - self.tag
+
 def readWord(address):
-    #TODO: read 4 bytes at a time, little endian conversion 256^0*mem[value] + 256^1*mem[value] + 256^2*mem[value] ... etc.
+    #TODO: read 4 bytes at a time, little endian conversion 256^0*mem[value0] + 256^1*mem[value1] + 256^2*mem[value2] ... etc.
     pass
 #   from addr, compute the tag t, index i and block offset b
 #   look at the information in the cache for set i (there is only one block in the set)
@@ -55,16 +70,18 @@ def writeWord(address, word):
 
 def main():
     addressLength = 16
-    cache = Cache(addressLength, 1024, 64, 1, "Null")
-    #TODO: init memory four bytes init memory[0] is [0,0,0,0], memory[4] is [4,0,0,0], memory[256] is [0,1,0,0]
-    memory = [0, 0, 0, 0] * (2 ** addressLength)
+    cache = Cache(addressLength, CACHE_SIZE, CACHE_BLOCK_SIZE, ASSOCIATIVITY, "Null")
+    memory = bytearray(2 ** addressLength)
 
     print(len(memory), len(cache.block), cache.set)
 
     #46916 = 101101 1101 000100
-    memory[46916] = int('1011011101000100', 2)
+    memory[46916] = int('1011', 2)
+    memory[46917] = int('0111', 2)
+    memory[46918] = int('0100', 2)
+    memory[46919] = int('0100', 2)
     #13388 = 001101 0001 001100
-    memory[13388] = int('0011010001001100', 2)
+    #memory[13388] = int('0011010001001100', 2)
 
     filename = "part-one-addresses.txt"
 
