@@ -4,6 +4,7 @@
 
 import re
 
+ADDRESS_LENGTH = 16
 CACHE_SIZE = 1024
 CACHE_BLOCK_SIZE = 64
 ASSOCIATIVITY = 1
@@ -67,9 +68,8 @@ def writeWord(address, word):
     pass
 
 def main():
-    addressLength = 16
-    cache = Cache(addressLength, CACHE_SIZE, CACHE_BLOCK_SIZE, ASSOCIATIVITY, "Null")
-    memory = bytearray(2 ** addressLength)
+    cache = Cache(ADDRESS_LENGTH, CACHE_SIZE, CACHE_BLOCK_SIZE, ASSOCIATIVITY, "Null")
+    memory = bytearray(2 ** ADDRESS_LENGTH)
 
     print(len(memory), len(cache.block), cache.set)
 
