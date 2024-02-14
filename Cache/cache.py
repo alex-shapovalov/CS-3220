@@ -57,7 +57,7 @@ def main():
     addressLength = 16
     cache = Cache(addressLength, 1024, 64, 1, "Null")
     #TODO: init memory four bytes init memory[0] is [0,0,0,0], memory[4] is [4,0,0,0], memory[256] is [0,1,0,0]
-    memory = [0] * (2 ** addressLength)
+    memory = [0, 0, 0, 0] * (2 ** addressLength)
 
     print(len(memory), len(cache.block), cache.set)
 
