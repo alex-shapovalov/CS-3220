@@ -17,8 +17,6 @@ def logb2(val):
 
 class Block:
     def __init__(self, size):
-        # TODO: bytearrays
-        #value = bytearray(regArray)
         self.data = bytearray(size)
         self.tag = -1
         self.dirty = False
@@ -51,7 +49,7 @@ class Cache:
 def readWord(address):
     #TODO: read 4 bytes at a time, little endian conversion 256^0*mem[value0] + 256^1*mem[value1] + 256^2*mem[value2] ... etc.
     pass
-#   from addr, compute the tag t, index i and block offset b
+#   from addr, compute the tag t, index i and block offset b (use cache.block_offset, tag, index etc.)
 #   look at the information in the cache for set i (there is only one block in the set)
 #   if the block in set i is valid {
 #      if the tag for set i == t {
