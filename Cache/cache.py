@@ -44,64 +44,77 @@ class Cache:
                     z += 1
 
         self.block_offset = logb2(block)
-        self.tag = logb2(numSets)
-        self.index = self.block_offset - self.tag
+        self.index = logb2(numSets)
+        self.tag = ADDRESS_LENGTH - self.block_offset - self.index
+        self.block_address = ADDRESS_LENGTH - self.tag
+
+#global cache and memory
+cache = Cache(ADDRESS_LENGTH, CACHE_SIZE, CACHE_BLOCK_SIZE, ASSOCIATIVITY, "Null")
+memory = bytearray(2 ** ADDRESS_LENGTH)
 
 def readWord(address):
-    #TODO: read 4 bytes at a time, little endian conversion 256^0*mem[value0] + 256^1*mem[value1] + 256^2*mem[value2] ... etc.
-    pass
-#   from addr, compute the tag t, index i and block offset b (use cache.block_offset, tag, index etc.)
-#   look at the information in the cache for set i (there is only one block in the set)
-#   if the block in set i is valid {
-#      if the tag for set i == t {
-#      // this is a hit
-#         return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
-#      }
-#   }
-#   // this is a miss
-#   compute the range of the desired block in memory: start to start+blocksize-1
-#   read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
-#   set the tag set i to t
-#   return the word at positions b, b+1, b+2, b+3 from the block in set i
+    #from addr, compute the tag t, index i and block offset b (use cache.block_offset, tag, index etc.)
+    tag = address >> cache.block_address
+    index = address >> cache.block_address & ((1 << cache.index) - 1)
+    block_offset = address &  ((1 << cache.block_offset) - 1)
+    block_index = 0
+
+    # compute the range of the desired block in memory: start to start+blocksize-1
+    start = (('{0:16b}'.format(address))[:-4]) + "0000"
+    start = int(start, 2)
+    end = start + (CACHE_BLOCK_SIZE - 1)
+
+    #look at the information in the cache for set i (there is only one block in the set)
+    if cache.set["set " + str(index)][cache.associativity - 1].valid and cache.set["set " + str(index)][cache.associativity - 1].tag == tag: #cache hit
+        word = 0
+        for x in range(4):
+            #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
+            word += (256 ** x) * cache.set["set " + str(index)][cache.associativity - 1].data[block_offset + x]
+            print(word)
+        print("read hit [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
+        return word
+    else: #cache miss
+        #read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
+        for x in range(CACHE_BLOCK_SIZE - 1):
+            cache.set["set " + str(index)][cache.associativity - 1].data[x] = memory[x + start]
+
+        #set the valid bit for set i to true
+        cache.set["set " + str(index)][cache.associativity - 1].valid = True
+
+        #set the tag set i to t
+        cache.set["set " + str(index)][cache.associativity - 1].tag = tag
+
+        #return the word at positions b, b+1, b+2, b+3 from the block in set i
+        word = 0
+        for x in range(4):
+            # read 4 bytes at a time, little endian conversion 256^0*mem[value0] + 256^1*mem[value1] + 256^2*mem[value2] ... etc.
+            #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
+            word += (256 ** x) * cache.set["set " + str(index)][cache.associativity - 1].data[block_offset + x]
+        print("read miss [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
+        return word
 
 def writeWord(address, word):
     pass
 
 def main():
-    cache = Cache(ADDRESS_LENGTH, CACHE_SIZE, CACHE_BLOCK_SIZE, ASSOCIATIVITY, "Null")
-    memory = bytearray(2 ** ADDRESS_LENGTH)
-
-    print(len(memory), len(cache.block), cache.set)
-
-    #46916 = 101101 1101 000100
-    memory[46916] = int('1011', 2)
-    memory[46917] = int('0111', 2)
-    memory[46918] = int('0100', 2)
-    memory[46919] = int('0100', 2)
-
-    #13388 = 001101 0001 001100
-    memory[13388] = int('0011', 2)
-    memory[13389] = int('0100', 2)
-    memory[13390] = int('0100', 2)
-    memory[13391] = int('1100', 2)
-
     filename = "part-one-addresses.txt"
 
     with open(filename, 'r') as file:
-        #this is extremely lazy determination of what function is on each line (doesn't catch syntax errors etc.)
-        #but i'm not being tested on my ability to properly read in inputs from a file, so i don't really care
-        line = file.readline()
-        operation = line[0]
-        if (operation == 'r'):
-            values = [int(d) for d in re.findall(r'-?\d+', line)]
-            readWord(values[0])
+        for line in file:
+            #this is extremely lazy determination of what function is on each line (doesn't catch syntax errors etc.)
+            #but i'm not being tested on my ability to properly read in inputs from a file, so i don't really care
+            line = line.strip()
+            operation = line[0]
+            if (operation == 'r'):
+                values = [int(d) for d in re.findall(r'-?\d+', line)]
+                readWord(values[0])
 
-        elif (operation == 'w'):
-            values = [int(d) for d in re.findall(r'-?\d+', line)]
-            writeWord(values[0], values[1])
+            elif (operation == 'w'):
+                values = [int(d) for d in re.findall(r'-?\d+', line)]
+                writeWord(values[0], values[1])
 
-        else:
-            pass
+            else:
+                pass
 
     #TODO: keep track of statistics
 
