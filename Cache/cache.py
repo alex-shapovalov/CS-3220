@@ -51,6 +51,10 @@ class Cache:
 #global cache and memory
 cache = Cache(ADDRESS_LENGTH, CACHE_SIZE, CACHE_BLOCK_SIZE, ASSOCIATIVITY, "Null")
 memory = bytearray(2 ** ADDRESS_LENGTH)
+for i in range(0, len(memory), 4):
+    word = i // 4
+    memory[i:i+4] = [word & 255, (word >> 8) & 255, (word >> 16) & 255, (word >> 24) & 255]
+tag_queue = [0, 0, 0, 0]
 
 def readWord(address):
     #from addr, compute the tag t, index i and block offset b (use cache.block_offset, tag, index etc.)
@@ -70,8 +74,7 @@ def readWord(address):
         for x in range(4):
             #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][cache.associativity - 1].data[block_offset + x]
-            print(word)
-        print("read hit [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
+        print("read hit  [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
         return word
     else: #cache miss
         #read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
