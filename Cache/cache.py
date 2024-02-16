@@ -69,7 +69,6 @@ def readWord(address):
     start = int(start, 2)
     end = start + (CACHE_BLOCK_SIZE - 1)
 
-    #TODO: fix for correct output
     #look at the information in the cache for set i (there is only one block in the set)
     if cache.set["set " + str(index)][cache.associativity - 1].valid and cache.set["set " + str(index)][cache.associativity - 1].tag == tag: #cache hit
         word = 0
