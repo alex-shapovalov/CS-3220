@@ -7,7 +7,7 @@ import re
 ADDRESS_LENGTH = 16
 CACHE_SIZE = 1024
 CACHE_BLOCK_SIZE = 64
-ASSOCIATIVITY = 2
+ASSOCIATIVITY = 1
 WRITETYPE = "Null"
 
 #statistics declarations (it is nonsensical that i had to put global here but the program broke if i didn't, python plz fix)
