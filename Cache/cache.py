@@ -65,8 +65,8 @@ def readWord(address):
     block_index = 0
 
     # compute the range of the desired block in memory: start to start+blocksize-1
-    start = (('{0:16b}'.format(address))[:-cache.tag]) + ("0" * cache.tag)
-    start = int(start, 2)
+    binary = (('{0:16b}'.format(address))[:-cache.tag]) + ("0" * cache.tag)
+    start = int(binary, 2)
     end = start + (CACHE_BLOCK_SIZE - 1)
 
     #look at the information in the cache for set i (there is only one block in the set)
@@ -76,6 +76,8 @@ def readWord(address):
             #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][cache.associativity - 1].data[block_offset + x]
         print("read hit  [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
+        print(binary)
+        print("")
         return word
     else: #cache miss
         #read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
@@ -95,6 +97,8 @@ def readWord(address):
             #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][cache.associativity - 1].data[block_offset + x]
         print("read miss [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) +  " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
+        print(binary)
+        print("")
         return word
 
 def writeWord(address, word):
