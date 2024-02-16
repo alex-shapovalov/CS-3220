@@ -64,7 +64,7 @@ def readWord(address):
     block_index = 0
 
     # compute the range of the desired block in memory: start to start+blocksize-1
-    start = (('{0:16b}'.format(address))[:-4]) + "0000"
+    start = (('{0:16b}'.format(address))[:-cache.tag]) + ("0" * cache.tag)
     start = int(start, 2)
     end = start + (CACHE_BLOCK_SIZE - 1)
 
