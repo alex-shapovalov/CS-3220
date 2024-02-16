@@ -53,8 +53,8 @@ cache = Cache(ADDRESS_LENGTH, CACHE_SIZE, CACHE_BLOCK_SIZE, ASSOCIATIVITY, "Null
 memory = bytearray(2 ** ADDRESS_LENGTH)
 #prefill memory
 for i in range(0, len(memory), 4):
-    word = i // 4
-    memory[i:i+4] = [word & 255, (word >> 8) & 255, (word >> 16) & 255, (word >> 24) & 255]
+    memory[i:i+4] = [i & 255, (i >> 8) & 255, (i >> 16) & 255, (i >> 24) & 255]
+
 tag_queue = [0, 0, 0, 0]
 
 def readWord(address):
