@@ -4,10 +4,10 @@
 
 import re
 
-ADDRESS_LENGTH = 16
 CACHE_SIZE = 1024
 CACHE_BLOCK_SIZE = 64
-ASSOCIATIVITY = 1
+ADDRESS_LENGTH = 16
+ASSOCIATIVITY = 4
 WRITETYPE = "Null"
 
 #statistics declarations (it is nonsensical that i had to put global here but the program broke if i didn't, python plz fix)
@@ -52,7 +52,7 @@ class Cache:
         numSets = (cache // associativity) // block #figure out how many sets we need
         self.set = {} #sets defined as a dictionary, didn't make it its own class because it's simply a grouping of blocks, not its own thing
         z = 0
-        for x in range(1, numSets + 1): #creates sets based on block size and associativity, self.sets is a dictionary of 1 or more blocks
+        for x in range(0, numSets): #creates sets based on block size and associativity, self.sets is a dictionary of 1 or more blocks
             self.set["set " + str(x)] = []
             for y in range(min(numSets, associativity)):
                 if z < (CACHE_SIZE // CACHE_BLOCK_SIZE):
@@ -61,8 +61,10 @@ class Cache:
 
         self.block_offset = logb2(block)
         self.index = logb2(numSets)
-        self.tag = ADDRESS_LENGTH - self.block_offset - self.index
-        self.block_address = ADDRESS_LENGTH - self.tag
+        self.tag = self.address - self.block_offset - self.index
+        self.block_address = self.address - self.tag
+
+        print(self.tag, self.index, self.block_offset, self.block_address)
 
 #global cache and memory
 cache = Cache(ADDRESS_LENGTH, CACHE_SIZE, CACHE_BLOCK_SIZE, ASSOCIATIVITY, WRITETYPE)
@@ -79,15 +81,19 @@ def readWord(address):
     global read_hits
 
     #from addr, compute the tag t, index i and block offset b (use cache.block_offset, tag, index etc.)
-    tag = address >> cache.block_address
-    index = address >> cache.block_address & ((1 << cache.index) - 1)
-    block_offset = address &  ((1 << cache.block_offset) - 1)
+    #TODO: fix
+    tag = address >> cache.tag
+    index = address >> cache.tag & ((1 << cache.index) - 1)
+    block_offset = address & ((1 << cache.block_offset) - 1)
     block_index = 0
+
+    print(tag, index, block_offset)
 
     # compute the range of the desired block in memory: start to start+blocksize-1
     binary = (('{0:16b}'.format(address))[:-cache.tag]) + ("0" * cache.tag)
     start = int(binary, 2)
     end = start + (CACHE_BLOCK_SIZE - 1)
+    print(binary, '{0:16b}'.format(end))
 
     #look at the information in the cache for set i (there is only one block in the set)
     if cache.set["set " + str(index)][block_index].valid and cache.set["set " + str(index)][block_index].tag == tag: #cache hit
@@ -97,7 +103,7 @@ def readWord(address):
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
         read_hits += 1
         print("read hit  [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
-        print(binary)
+        #print(binary)
         print("")
         return word
     else: #cache miss
@@ -119,7 +125,7 @@ def readWord(address):
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
         read_misses += 1
         print("read miss [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) +  " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
-        print(binary)
+        #print(binary)
         print("")
         return word
 
@@ -140,7 +146,7 @@ def main():
     global reads
     global writes
 
-    filename = "part-one-addresses.txt"
+    filename = "part-two-addresses.txt"
 
     with open(filename, 'r') as file:
         for line in file:
