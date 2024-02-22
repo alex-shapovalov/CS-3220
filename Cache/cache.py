@@ -82,6 +82,7 @@ def readWord(address):
 
     #from addr, compute the tag t, index i and block offset b (use cache.block_offset, tag, index etc.)
     #TODO: fix
+    print('{0:16b}'.format(address))
     tag = address >> cache.tag
     index = address >> cache.tag & ((1 << cache.index) - 1)
     block_offset = address & ((1 << cache.block_offset) - 1)
@@ -89,6 +90,7 @@ def readWord(address):
 
     print(tag, index, block_offset)
 
+    # TODO: fix
     # compute the range of the desired block in memory: start to start+blocksize-1
     binary = (('{0:16b}'.format(address))[:-cache.tag]) + ("0" * cache.tag)
     start = int(binary, 2)
