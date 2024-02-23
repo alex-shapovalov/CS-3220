@@ -76,7 +76,7 @@ def readWord(address):
     global read_misses
     global read_hits
 
-    #from addr, compute the tag t, index i and block offset b (use cache.block_offset, tag, index etc.)
+    #from addr, compute the tag t, index i and block offset b (use block_offset, block_address, tag, index etc.)
     tag = address >> cache.block_address
     index = (address >> cache.block_offset) & cache.index
     block_offset = address & ((1 << cache.block_offset) - 1)
