@@ -107,7 +107,7 @@ def readWord(address):
             hit = True
             hit_index = x
 
-    #look at the information in the cache for set i (there is only one block in the set)
+    #look at the information in the cache for set i
     if hit == True: #cache hit
         #tag queue alteration on read hit
         if change == True:
