@@ -8,7 +8,7 @@ CACHE_SIZE = 1024
 CACHE_BLOCK_SIZE = 64
 ADDRESS_LENGTH = 16
 ASSOCIATIVITY = 4
-WRITETYPE = "Null"
+WRITETYPE = "write through"
 
 #statistics declarations (it is nonsensical that i had to put global here but the program broke if i didn't, python plz fix)
 global reads
@@ -201,6 +201,8 @@ def main():
     print("number of sets = " + str(len(cache.set)))
     print("cache associativity = " + str(ASSOCIATIVITY))
     print("cache tag length = " + str(cache.tag))
+    print("cache index length = " + str(cache.index))
+    print("cache block offset length = " + str(cache.block_offset))
     print("write type = " + str(WRITETYPE))
     print("")
     print("-----------------------------------------------------------------------------------")
