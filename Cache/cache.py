@@ -91,6 +91,7 @@ def readWord(address):
         for x in range(cache.associativity):
             if cache.set["set " + str(index)][x].valid:
                 block_index += 1
+
     change = False
     #if block_index = associativity then we are full and must evict from tag_queue, set block_index to cache.associativity - 1
     if block_index == cache.associativity:
