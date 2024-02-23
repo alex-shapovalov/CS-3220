@@ -62,9 +62,7 @@ class Cache:
         self.block_offset = logb2(block)
         self.index = logb2(numSets)
         self.tag = self.address - self.block_offset - self.index
-        self.block_address = self.address - self.tag
-
-        print(self.tag, self.index, self.block_offset, self.block_address)
+        self.block_address = self.address - self.tag #address + tag
 
 #global cache and memory
 cache = Cache(ADDRESS_LENGTH, CACHE_SIZE, CACHE_BLOCK_SIZE, ASSOCIATIVITY, WRITETYPE)
@@ -81,20 +79,21 @@ def readWord(address):
     global read_hits
 
     #from addr, compute the tag t, index i and block offset b (use cache.block_offset, tag, index etc.)
-    #TODO: fix bit shifting
-    print('{0:16b}'.format(address))
-    tag = address >> cache.tag
-    index = address >> cache.tag & ((1 << cache.index) - 1)
+    tag = address >> cache.block_address
+    index = (address >> cache.block_offset) & cache.index
     block_offset = address & ((1 << cache.block_offset) - 1)
     block_index = 0
 
-    print(tag, index, block_offset)
+    # follow something like this to write to the empty block in a set:
+    if cache.associativity > 1 and cache.set["set " + str(index)][block_index].valid:
+        for x in range(cache.associativity - 1):
+            if cache.set["set " + str(index)][x].valid:
+                block_index += 1
 
     # compute the range of the desired block in memory: start to start+blocksize-1
-    binary = (('{0:16b}'.format(address))[:-cache.tag]) + ("0" * cache.tag)
+    binary = (('{0:016b}'.format(address))[:-cache.block_offset]) + ("0" * cache.block_offset)
     start = int(binary, 2)
     end = start + (CACHE_BLOCK_SIZE - 1)
-    print(binary, '{0:16b}'.format(end))
 
     #look at the information in the cache for set i (there is only one block in the set)
     if cache.set["set " + str(index)][block_index].valid and cache.set["set " + str(index)][block_index].tag == tag: #cache hit
@@ -104,7 +103,7 @@ def readWord(address):
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
         read_hits += 1
         print("read hit  [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
-        #print(binary)
+        print(binary)
         print("")
         return word
     else: #cache miss
@@ -126,7 +125,7 @@ def readWord(address):
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
         read_misses += 1
         print("read miss [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) +  " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
-        #print(binary)
+        print(binary)
         print("")
         return word
 
@@ -135,11 +134,17 @@ def writeWord(address, word):
     global write_misses
     global write_hits
 
+    #from addr, compute the tag t, index i and block offset b (use cache.block_offset, tag, index etc.)
+    tag = address >> cache.block_address
+    index = (address >> cache.block_offset) & cache.index
+    block_offset = address & ((1 << cache.block_offset) - 1)
+    block_index = 0
+
     #follow something like this to write to the empty block in a set:
-    #if cache.associativity > 1 and cache.set["set " + str(index)][block_index].dirty:
-        #for x in range(cache.associativity - 1):
-            #if cache.set["set " + str(index)][x].dirty:
-                #block_index += 1
+    if cache.associativity > 1 and cache.set["set " + str(index)][block_index].dirty:
+        for x in range(cache.associativity - 1):
+            if cache.set["set " + str(index)][x].dirty:
+                block_index += 1
     pass
 
 def main():
