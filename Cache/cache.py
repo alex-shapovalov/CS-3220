@@ -72,7 +72,7 @@ for i in range(0, len(memory), 4):
     memory[i:i+4] = [i & 255, (i >> 8) & 255, (i >> 16) & 255, (i >> 24) & 255]
 
 #TODO: PART 2 tag queue
-tag_queue = [0, 0, 0, 0]
+tag_queue = [-1, -1, -1, -1]
 
 def readWord(address):
     global read_misses
