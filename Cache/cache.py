@@ -378,7 +378,6 @@ def main():
     print("reads = " + str(reads))
     print("read misses = " + str(read_misses) + " (" + str('{:.2f}'.format((read_misses / reads) * 100)) + "%)")
     print("reads hits = " + str(read_hits) + " (" + str('{:.2f}'.format((read_hits / reads) * 100)) + "%)")
-    #TODO: PART 2: uncomment
     print("writes = " + str(writes))
     print("write misses = " + str(write_misses) + " (" + str('{:.2f}'.format((write_misses / writes) * 100)) + "%)")
     print("write hits = " + str(write_hits) + " (" + str('{:.2f}'.format((write_hits / writes) * 100)) + "%)")
