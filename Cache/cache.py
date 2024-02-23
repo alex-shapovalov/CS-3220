@@ -81,7 +81,7 @@ def readWord(address):
     block_offset = address & ((1 << cache.block_offset) - 1)
     block_index = 0
 
-    # follow something like this to write to the empty block in a set:
+    #follow something like this to write to the empty block in a set:
     if cache.associativity > 1 and cache.set["set " + str(index)][block_index].valid:
         for x in range(cache.associativity):
             if cache.set["set " + str(index)][x].valid:
