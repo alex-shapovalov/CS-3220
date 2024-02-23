@@ -160,9 +160,9 @@ def writeWord(address, word):
     block_index = 0
 
     #follow something like this to write to the empty block in a set:
-    if cache.associativity > 1 and cache.set["set " + str(index)][block_index].dirty:
+    if cache.associativity > 1 and cache.set["set " + str(index)][block_index].valid:
         for x in range(cache.associativity - 1):
-            if cache.set["set " + str(index)][x].dirty:
+            if cache.set["set " + str(index)][x].valid:
                 block_index += 1
     pass
 
