@@ -81,44 +81,70 @@ def readWord(address):
     index = (address >> cache.block_offset) & cache.index
     block_offset = address & ((1 << cache.block_offset) - 1)
     block_index = 0
-
-    #follow something like this to write to the empty block in a set:
-    if cache.associativity > 1 and cache.set["set " + str(index)][block_index].valid:
-        for x in range(cache.associativity):
-            if cache.set["set " + str(index)][x].valid:
-                block_index += 1
-
-    #TODO: tag queue
-    #if block_index = associativity then we are full and must evict from tag_queue
-    #set block_index to cache.associativity - 1
-    if block_index == cache.associativity:
-        block_index = cache.associativity - 1
-    #evict set[index][0], slide everything to the left, put the new tag into set[index][associativity - 1]
-
     # compute the range of the desired block in memory: start to start+blocksize-1
     binary = (('{0:016b}'.format(address))[:-cache.block_offset]) + ("0" * cache.block_offset)
     start = int(binary, 2)
     end = start + (CACHE_BLOCK_SIZE - 1)
 
+    #follow something like this to read from the empty block in a set:
+    if cache.associativity > 1 and cache.set["set " + str(index)][block_index].valid:
+        for x in range(cache.associativity):
+            if cache.set["set " + str(index)][x].valid:
+                block_index += 1
+
+    change = False
+    #if block_index = associativity then we are full and must evict from tag_queue, set block_index to cache.associativity - 1
+    if block_index == cache.associativity:
+        block_index = cache.associativity - 1
+        change = True
+
+    #do we have a read hit?
+    hit = False
+    hit_index = 0
+    #check the current set to see if we have a read hit
+    for x in range(cache.associativity):
+        if cache.set["set " + str(index)][x].valid and cache.set["set " + str(index)][x].tag == tag:
+            hit = True
+            hit_index = x
+
     #look at the information in the cache for set i (there is only one block in the set)
-    if cache.set["set " + str(index)][block_index].valid and cache.set["set " + str(index)][block_index].tag == tag: #cache hit
+    if hit == True: #cache hit
+        #tag queue alteration on read hit
+        if change == True:
+            temp = cache.set["set " + str(index)][cache.associativity - 1]
+            cache.set["set " + str(index)][cache.associativity - 1] = cache.set["set " + str(index)][hit_index]
+            for x in range(hit_index, cache.associativity - 1):
+                if x == cache.associativity - 2:
+                    cache.set["set " + str(index)][x] = temp
+                else:
+                    cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
+
         word = 0
         for x in range(4):
             #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
-        #screw tag queues, this works great too
-        print("[ ", end = "")
-        for x in range(cache.associativity):
-            print(cache.set["set " + str(index)][0 + x].tag, end=", ")
-        print(" ]")
+        if cache.associativity > 1:
+            #screw tag queues, this works great too
+            print("[ ", end = "")
+            for x in range(cache.associativity):
+                print(cache.set["set " + str(index)][0 + x].tag, end=", ")
+            print(" ]")
 
         read_hits += 1
         print("read hit  [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
-        print(binary)
+        print('{0:016b}'.format(address))
         print("")
         return word
     else: #cache miss
+        #evicting on a miss
+        if change == True:
+            for x in range(cache.associativity):
+                if x == cache.associativity - 1:
+                    cache.set["set " + str(index)][x] = Block(CACHE_BLOCK_SIZE)
+                else:
+                    cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
+
         #read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
         for x in range(CACHE_BLOCK_SIZE - 1):
             cache.set["set " + str(index)][block_index].data[x] = memory[x + start]
@@ -136,16 +162,21 @@ def readWord(address):
             #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
-        #screw tag queues, this works great too
-        print("[ ", end = "")
-        for x in range(cache.associativity):
-            print(cache.set["set " + str(index)][0 + x].tag, end=", ")
-        print("\b", end="")
-        print(" ]")
+        if cache.associativity > 1:
+            #screw tag queues, this works great too
+            print("[ ", end = "")
+            for x in range(cache.associativity):
+                print(cache.set["set " + str(index)][0 + x].tag, end=", ")
+            print("\b", end="")
+            print(" ]")
 
         read_misses += 1
-        print("read miss [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) +  " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
-        print(binary)
+        if change == True:
+            print("read miss + replace [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
+            print("evict tag " + str(cache.set["set " + str(index)][0].tag) + " in block_index 0")
+        else:
+            print("read miss [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
+        print('{0:016b}'.format(address))
         print("")
         return word
 
