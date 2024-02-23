@@ -8,7 +8,8 @@ CACHE_SIZE = 1024
 CACHE_BLOCK_SIZE = 64
 ADDRESS_LENGTH = 16
 ASSOCIATIVITY = 4
-WRITETYPE = "write through"
+WRITETYPE = "write-through"
+#WRITETYPE = "write-back"
 
 #statistics declarations (it is nonsensical that i had to put global here but the program broke if i didn't, python plz fix)
 global reads
