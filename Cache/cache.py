@@ -8,8 +8,8 @@ CACHE_SIZE = 1024
 CACHE_BLOCK_SIZE = 64
 ADDRESS_LENGTH = 16
 ASSOCIATIVITY = 4
-WRITETYPE = "write-through"
-#WRITETYPE = "write-back"
+#WRITETYPE = "write-through"
+WRITETYPE = "write-back"
 
 #statistics declarations (it is nonsensical that i had to put global here but the program broke if i didn't, python plz fix)
 global reads
@@ -36,6 +36,7 @@ class Block:
     def __init__(self, size):
         self.data = bytearray(size)
         self.tag = -1
+        self.address = -1
         self.dirty = False
         self.valid = False
 
@@ -124,6 +125,8 @@ def readWord(address):
             #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
+        cache.set["set " + str(index)][block_index].address = address
+
         if cache.associativity > 1:
             #screw tag queues, this works great too
             print("[ ", end = "")
@@ -162,6 +165,8 @@ def readWord(address):
             #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
+        cache.set["set " + str(index)][block_index].address = address
+
         if cache.associativity > 1:
             #screw tag queues, this works great too
             print("[ ", end = "")
@@ -180,7 +185,7 @@ def readWord(address):
         print("")
         return word
 
-def writeWord(address, word):
+def writeWord(address, write_word):
     #TODO: PART 2:
     global write_misses
     global write_hits
@@ -190,10 +195,14 @@ def writeWord(address, word):
     index = (address >> cache.block_offset) & cache.index
     block_offset = address & ((1 << cache.block_offset) - 1)
     block_index = 0
+    # compute the range of the desired block in memory: start to start+blocksize-1
+    binary = (('{0:016b}'.format(address))[:-cache.block_offset]) + ("0" * cache.block_offset)
+    start = int(binary, 2)
+    end = start + (CACHE_BLOCK_SIZE - 1)
 
     #follow something like this to write to the empty block in a set:
     if cache.associativity > 1 and cache.set["set " + str(index)][block_index].valid:
-        for x in range(cache.associativity - 1):
+        for x in range(cache.associativity):
             if cache.set["set " + str(index)][x].valid:
                 block_index += 1
 
@@ -212,14 +221,117 @@ def writeWord(address, word):
             hit = True
             hit_index = x
 
-    if cache.write == "write-through":
-        pass
+    if hit == True: #cache hit
+        # tag queue alteration on write hit
+        if change == True:
+            temp = cache.set["set " + str(index)][cache.associativity - 1]
+            cache.set["set " + str(index)][cache.associativity - 1] = cache.set["set " + str(index)][hit_index]
+            for x in range(hit_index, cache.associativity - 1):
+                if x == cache.associativity - 2:
+                    cache.set["set " + str(index)][x] = temp
+                else:
+                    cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
 
-    elif cache.write == "write-back":
-        pass
+        word = 0
+        for x in range(4):
+            # return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
+            word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
-    else:
-        pass
+        memory[address] = write_word
+
+        cache.set["set " + str(index)][block_index].address = address
+
+        if cache.associativity > 1:
+            # screw tag queues, this works great too
+            print("[ ", end="")
+            for x in range(cache.associativity):
+                print(cache.set["set " + str(index)][0 + x].tag, end=", ")
+            print(" ]")
+
+        write_hits += 1
+        print("write hit  [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
+        print('{0:016b}'.format(address))
+
+        if cache.write == "write-through":
+            print("write-through cache: write " + str(write_word) + " to memory[" + str(address) + "]")
+        elif cache.write == "write-back":
+            pass
+        else:
+            print("error: cache write type")
+
+        print("")
+    else: #cache miss
+        #evicting on a miss
+        if change == True:
+            if cache.write == "write-back":
+                evicted_block_address = cache.set["set " + str(index)][0].address
+                print(evicted_block_address)
+                evicted_binary = (('{0:016b}'.format(evicted_block_address))[:-cache.block_offset]) + ("0" * cache.block_offset)
+                evicted_start = int(evicted_binary, 2)
+                evicted_end = evicted_start + (CACHE_BLOCK_SIZE - 1)
+
+            for x in range(cache.associativity):
+                if x == cache.associativity - 1:
+                    cache.set["set " + str(index)][x] = Block(CACHE_BLOCK_SIZE)
+                else:
+                    cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
+
+        # read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
+        for x in range(CACHE_BLOCK_SIZE - 1):
+            cache.set["set " + str(index)][block_index].data[x] = memory[x + start]
+
+        if cache.write == "write-back":
+            cache.set["set " + str(index)][block_index].dirty = True
+
+        # set the valid bit for set i to true
+        cache.set["set " + str(index)][block_index].valid = True
+
+        # set the tag set i to t
+        cache.set["set " + str(index)][block_index].tag = tag
+
+        # return the word at positions b, b+1, b+2, b+3 from the block in set i
+        word = 0
+        for x in range(4):
+            # read 4 bytes at a time, little endian conversion 256^0*mem[value0] + 256^1*mem[value1] + 256^2*mem[value2] ... etc.
+            # return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
+            word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
+
+        memory[address] = write_word
+
+        cache.set["set " + str(index)][block_index].address = address
+
+        if cache.associativity > 1:
+            # screw tag queues, this works great too
+            print("[ ", end="")
+            for x in range(cache.associativity):
+                print(cache.set["set " + str(index)][0 + x].tag, end=", ")
+            print("\b", end="")
+            print(" ]")
+
+        write_misses += 1
+        if change == True:
+            print("write miss + replace [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
+            print("evict tag " + str(cache.set["set " + str(index)][0].tag) + " in block_index 0")
+        else:
+            print("write miss [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
+        print('{0:016b}'.format(address))
+
+        if cache.write == "write-through":
+            print("write-through cache: write " + str(write_word) + " to memory[" + str(address) + "]")
+        elif cache.write == "write-back" and change == True:
+            print("write-back cache: write " + str(write_word) + " to memory[" + str(address) + "]")
+            print("write-back (" + str(evicted_start) + " - " + str(evicted_end) + ")")
+            print("read in (" + str(start) + " - " + str(end) + ")")
+            print("")
+        elif cache.write == "write-back" and change == False:
+            print("write-back cache: write " + str(write_word) + " to memory[" + str(address) + "]")
+            print("read in (" + str(start) + " - " + str(end) + ")")
+            print("")
+        else:
+            print("error: cache write type")
+
+        print("")
+        return word
 
 def main():
     #TODO: PART 2: change to allow for hexadecimal commands
@@ -242,9 +354,8 @@ def main():
             elif (operation == 'w'):
                 writes += 1
                 values = [int(d) for d in re.findall(r'-?\d+', line)]
-                word = bytearray([(values[1] >> 24) & 0xFF, (values[1] >> 16) & 0xFF, (values[1] >> 8) & 0xFF, values[1] & 0xFF])
-                print(values[1], word)
-                writeWord(values[0], word)
+                #word = bytearray([(values[1] >> 24) & 0xFF, (values[1] >> 16) & 0xFF, (values[1] >> 8) & 0xFF, values[1] & 0xFF])
+                writeWord(values[0], values[1])
 
             else:
                 pass
@@ -268,9 +379,9 @@ def main():
     print("read misses = " + str(read_misses) + " (" + str('{:.2f}'.format((read_misses / reads) * 100)) + "%)")
     print("reads hits = " + str(read_hits) + " (" + str('{:.2f}'.format((read_hits / reads) * 100)) + "%)")
     #TODO: PART 2: uncomment
-    #print("writes = " + str(writes))
-    #print("write misses = " + str(write_misses) + " (" + str('{:.2f}'.format((write_misses / writes) * 100)) + "%)")
-    #print("write hits = " + str(write_hits) + " (" + str('{:.2f}'.format((write_hits / writes) * 100)) + "%)")
+    print("writes = " + str(writes))
+    print("write misses = " + str(write_misses) + " (" + str('{:.2f}'.format((write_misses / writes) * 100)) + "%)")
+    print("write hits = " + str(write_hits) + " (" + str('{:.2f}'.format((write_hits / writes) * 100)) + "%)")
     print("")
     print("-----------------------------------------------------------------------------------")
 
