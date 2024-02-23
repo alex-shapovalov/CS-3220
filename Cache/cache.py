@@ -196,7 +196,30 @@ def writeWord(address, word):
         for x in range(cache.associativity - 1):
             if cache.set["set " + str(index)][x].valid:
                 block_index += 1
-    pass
+
+    change = False
+    # if block_index = associativity then we are full and must evict from tag_queue, set block_index to cache.associativity - 1
+    if block_index == cache.associativity:
+        block_index = cache.associativity - 1
+        change = True
+
+    # do we have a write hit?
+    hit = False
+    hit_index = 0
+    # check the current set to see if we have a write hit
+    for x in range(cache.associativity):
+        if cache.set["set " + str(index)][x].valid and cache.set["set " + str(index)][x].tag == tag:
+            hit = True
+            hit_index = x
+
+    if cache.write == "write-through":
+        pass
+
+    elif cache.write == "write-back":
+        pass
+
+    else:
+        pass
 
 def main():
     #TODO: PART 2: change to allow for hexadecimal commands
@@ -219,7 +242,9 @@ def main():
             elif (operation == 'w'):
                 writes += 1
                 values = [int(d) for d in re.findall(r'-?\d+', line)]
-                writeWord(values[0], values[1])
+                word = bytearray([(values[1] >> 24) & 0xFF, (values[1] >> 16) & 0xFF, (values[1] >> 8) & 0xFF, values[1] & 0xFF])
+                print(values[1], word)
+                writeWord(values[0], word)
 
             else:
                 pass
