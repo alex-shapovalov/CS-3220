@@ -71,9 +71,6 @@ memory = bytearray(2 ** ADDRESS_LENGTH)
 for i in range(0, len(memory), 4):
     memory[i:i+4] = [i & 255, (i >> 8) & 255, (i >> 16) & 255, (i >> 24) & 255]
 
-#TODO: PART 2 tag queue
-tag_queue = [-1, -1, -1, -1]
-
 def readWord(address):
     global read_misses
     global read_hits
@@ -86,9 +83,16 @@ def readWord(address):
 
     # follow something like this to write to the empty block in a set:
     if cache.associativity > 1 and cache.set["set " + str(index)][block_index].valid:
-        for x in range(cache.associativity - 1):
+        for x in range(cache.associativity):
             if cache.set["set " + str(index)][x].valid:
                 block_index += 1
+
+    #TODO: tag queue
+    #if block_index = associativity then we are full and must evict from tag_queue
+    #set block_index to cache.associativity - 1
+    if block_index == cache.associativity:
+        block_index = cache.associativity - 1
+    #evict set[index][0], slide everything to the left, put the new tag into set[index][associativity - 1]
 
     # compute the range of the desired block in memory: start to start+blocksize-1
     binary = (('{0:016b}'.format(address))[:-cache.block_offset]) + ("0" * cache.block_offset)
@@ -101,6 +105,13 @@ def readWord(address):
         for x in range(4):
             #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
+
+        #screw tag queues, this works great too
+        print("[ ", end = "")
+        for x in range(cache.associativity):
+            print(cache.set["set " + str(index)][0 + x].tag, end=", ")
+        print(" ]")
+
         read_hits += 1
         print("read hit  [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
         print(binary)
@@ -123,6 +134,14 @@ def readWord(address):
             #read 4 bytes at a time, little endian conversion 256^0*mem[value0] + 256^1*mem[value1] + 256^2*mem[value2] ... etc.
             #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
+
+        #screw tag queues, this works great too
+        print("[ ", end = "")
+        for x in range(cache.associativity):
+            print(cache.set["set " + str(index)][0 + x].tag, end=", ")
+        print("\b", end="")
+        print(" ]")
+
         read_misses += 1
         print("read miss [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) +  " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
         print(binary)
