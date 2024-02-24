@@ -255,7 +255,9 @@ def writeWord(address, write_word):
         if cache.write == "write-through":
             print("write-through cache: write " + str(write_word) + " to memory[" + str(address) + "]")
         elif cache.write == "write-back":
-            pass
+            print("write-back cache: write " + str(write_word) + " to memory[" + str(address) + "]")
+            print("read in (" + str(start) + " - " + str(end) + ")")
+            print("")
         else:
             print("error: cache write type")
 
