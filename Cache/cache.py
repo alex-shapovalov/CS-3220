@@ -363,7 +363,7 @@ def main():
                 pass
 
     #print statistics
-    print("----------------------------------------------------------------------------------")
+    print("-----------------------------------------------------------------------------------")
     print("")
     print("cache size = " + str(CACHE_SIZE))
     print("cache block size = " + str(CACHE_BLOCK_SIZE))
@@ -375,7 +375,7 @@ def main():
     print("cache block offset length = " + str(cache.block_offset))
     print("write type = " + str(WRITETYPE))
     print("")
-    print("----------------------------------------------------------------------------------")
+    print("-----------------------------------------------------------------------------------")
     print("")
     print("reads = " + str(reads))
     print("read misses = " + str(read_misses) + " (" + str('{:.2f}'.format((read_misses / reads) * 100)) + "%)")
@@ -384,6 +384,6 @@ def main():
     print("write misses = " + str(write_misses) + " (" + str('{:.2f}'.format((write_misses / writes) * 100)) + "%)")
     print("write hits = " + str(write_hits) + " (" + str('{:.2f}'.format((write_hits / writes) * 100)) + "%)")
     print("")
-    print("----------------------------------------------------------------------------------")
+    print("-----------------------------------------------------------------------------------")
 
 main()
