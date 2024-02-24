@@ -186,7 +186,6 @@ def readWord(address):
         return word
 
 def writeWord(address, write_word):
-    #TODO: PART 2:
     global write_misses
     global write_hits
 
