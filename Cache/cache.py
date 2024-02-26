@@ -8,8 +8,8 @@ CACHE_SIZE = 1024
 CACHE_BLOCK_SIZE = 64
 ADDRESS_LENGTH = 16
 ASSOCIATIVITY = 4
-#WRITETYPE = "write-through"
-WRITETYPE = "write-back"
+#WRITETYPE = "write-back"
+WRITETYPE = "write-through"
 
 #statistics declarations (it is nonsensical that i had to put global here but the program broke if i didn't, python plz fix)
 global reads
@@ -236,7 +236,13 @@ def writeWord(address, write_word):
             # return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
-        memory[address] = write_word
+        a = 32
+        for x in range(4):
+            if x < 3:
+                memory[address + x] = write_word >> a - 8 & 0xFF
+                a = a - 8
+            else:
+                memory[address + x] = write_word & 0xFF
 
         cache.set["set " + str(index)][block_index].address = address
 
@@ -297,7 +303,14 @@ def writeWord(address, write_word):
             # return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
             word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
-        memory[address] = write_word
+        if cache.write == "write-through":
+            a = 32
+            for x in range(4):
+                if x < 3:
+                    memory[address + x] = write_word >> a - 8 & 0xFF
+                    a = a - 8
+                else:
+                    memory[address + x] = write_word & 0xFF
 
         cache.set["set " + str(index)][block_index].address = address
 
@@ -320,12 +333,10 @@ def writeWord(address, write_word):
         if cache.write == "write-through":
             print("write-through cache: write " + str(write_word) + " to memory[" + str(address) + "]")
         elif cache.write == "write-back" and change == True:
-            print("write-back cache: write " + str(write_word) + " to memory[" + str(address) + "]")
             print("write-back (" + str(evicted_start) + " - " + str(evicted_end) + ")")
             print("read in (" + str(start) + " - " + str(end) + ")")
             print("")
         elif cache.write == "write-back" and change == False:
-            print("write-back cache: write " + str(write_word) + " to memory[" + str(address) + "]")
             print("read in (" + str(start) + " - " + str(end) + ")")
             print("")
         else:
