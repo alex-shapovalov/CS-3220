@@ -361,7 +361,6 @@ def main():
             elif (operation == 'w'):
                 writes += 1
                 values = [int(d) for d in re.findall(r'-?\d+', line)]
-                #word = bytearray([(values[1] >> 24) & 0xFF, (values[1] >> 16) & 0xFF, (values[1] >> 8) & 0xFF, values[1] & 0xFF])
                 writeWord(values[0], values[1])
 
             else:
