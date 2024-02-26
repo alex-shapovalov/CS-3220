@@ -3,8 +3,9 @@
 #Programming Assignment #2, Cache
 
 import re
+import random
 
-CACHE_SIZE = 1024
+CACHE_SIZE = 65536
 CACHE_BLOCK_SIZE = 64
 ADDRESS_LENGTH = 16
 ASSOCIATIVITY = 4
@@ -345,26 +346,56 @@ def main():
     global reads
     global writes
 
-    filename = "part-two-addresses.txt"
+    #i = int(x, 16)
+    #// 100000000000
 
+    filename = "cholesky.atrace.txt"
+
+    # old code for testing
+    # with open(filename, 'r') as file:
+    #     for line in file:
+    #         #this is extremely lazy determination of what function is on each line (doesn't catch syntax errors etc.)
+    #         #but i'm not being tested on my ability to properly read in inputs from a file, so i don't really care
+    #         line = line.strip()
+    #         print(line.strip())
+    #         operation = line[0]
+    #         if (operation == 'r'):
+    #             reads += 1
+    #             values = [int(d) for d in re.findall(r'-?\d+', line)]
+    #             readWord(values[0])
+    #
+    #         elif (operation == 'w'):
+    #             writes += 1
+    #             values = [int(d) for d in re.findall(r'-?\d+', line)]
+    #             writeWord(values[0], values[1])
+
+    #         else:
+    #            pass
+
+    DIVIDER = 500000000000
     with open(filename, 'r') as file:
         for line in file:
-            #this is extremely lazy determination of what function is on each line (doesn't catch syntax errors etc.)
-            #but i'm not being tested on my ability to properly read in inputs from a file, so i don't really care
-            line = line.strip()
-            operation = line[0]
-            if (operation == 'r'):
-                reads += 1
-                values = [int(d) for d in re.findall(r'-?\d+', line)]
-                readWord(values[0])
-
-            elif (operation == 'w'):
-                writes += 1
-                values = [int(d) for d in re.findall(r'-?\d+', line)]
-                writeWord(values[0], values[1])
+            instruction = line.split()
+            if len(instruction) == 1:
+                pass
 
             else:
-                pass
+                if instruction[1] == "R":
+                    address = int(instruction[2], 16)
+                    address = address // DIVIDER
+                    readWord(address)
+                    reads += 1
+
+                elif instruction[1] == "W":
+                    address = int(instruction[2], 16)
+                    address = address // DIVIDER
+                    rand_word = random.randint(1, 255)
+                    writeWord(address, rand_word)
+                    writes += 1
+
+                else:
+                    pass
+
 
     #print statistics
     print("---------------------------------------------------------------------------------")
