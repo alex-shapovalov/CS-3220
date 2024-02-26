@@ -388,6 +388,8 @@ def main():
     print("write misses = " + str(write_misses) + " (" + str('{:.2f}'.format((write_misses / writes) * 100)) + "%)")
     print("write hits = " + str(write_hits) + " (" + str('{:.2f}'.format((write_hits / writes) * 100)) + "%)")
     print("")
+    print("total (reads & writes) = " + str(reads + writes))
+    print("")
     print("---------------------------------------------------------------------------------")
 
 main()
