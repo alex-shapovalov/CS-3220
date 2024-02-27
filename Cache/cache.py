@@ -371,11 +371,10 @@ def main():
                pass
 
     """
-    x = 1
+
     DIVIDER = 5000
     with open(filename, 'r') as file:
         for line in file:
-            print(x)
             instruction = line.split()
             if len(instruction) == 1:
                 pass
@@ -398,7 +397,6 @@ def main():
 
                 else:
                     pass
-            x += 1
 
     #print statistics
     print("---------------------------------------------------------------------------------")
