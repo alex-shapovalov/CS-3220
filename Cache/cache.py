@@ -158,6 +158,8 @@ def readWord(address):
         #set the valid bit for set i to true
         cache.set["set " + str(index)][block_index].valid = True
 
+        cache.set["set " + str(index)][block_index].dirty = True
+
         #set the tag set i to t
         cache.set["set " + str(index)][block_index].tag = tag
 
@@ -289,11 +291,10 @@ def writeWord(address, write_word):
         for x in range(CACHE_BLOCK_SIZE - 1):
             cache.set["set " + str(index)][block_index].data[x] = memory[x + start]
 
-        if cache.write == "write-back":
-            cache.set["set " + str(index)][block_index].dirty = True
-
         # set the valid bit for set i to true
         cache.set["set " + str(index)][block_index].valid = True
+
+        cache.set["set " + str(index)][block_index].dirty = True
 
         # set the tag set i to t
         cache.set["set " + str(index)][block_index].tag = tag
@@ -372,9 +373,12 @@ def main():
 
     """
 
+    import itertools
+
     DIVIDER = 5000
     with open(filename, 'r') as file:
-        for line in file:
+        for line in itertools.islice(file, 0, 1000):
+        #for line in file:
             instruction = line.split()
             if len(instruction) == 1:
                 pass
