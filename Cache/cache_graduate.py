@@ -4,7 +4,7 @@
 
 import random
 
-CACHE_SIZE = 1024
+CACHE_SIZE = 2048
 CACHE_BLOCK_SIZE = 64
 ADDRESS_LENGTH = 16
 ASSOCIATIVITY = 4
@@ -151,8 +151,8 @@ def readWord(address):
                     cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
 
         #read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
-        for x in range(CACHE_BLOCK_SIZE - 1):
-            cache.set["set " + str(index)][block_index].data[x] = memory[x + start]
+        # for x in range(CACHE_BLOCK_SIZE - 1):
+        #     cache.set["set " + str(index)][block_index].data[x] = memory[x + start]
 
         #set the valid bit for set i to true
         cache.set["set " + str(index)][block_index].valid = True
@@ -288,8 +288,8 @@ def writeWord(address, write_word):
                     cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
 
         #read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
-        for x in range(CACHE_BLOCK_SIZE - 1):
-            cache.set["set " + str(index)][block_index].data[x] = memory[x + start]
+        # for x in range(CACHE_BLOCK_SIZE - 1):
+        #     cache.set["set " + str(index)][block_index].data[x] = memory[x + start]
 
         # set the valid bit for set i to true
         cache.set["set " + str(index)][block_index].valid = True
@@ -349,9 +349,8 @@ def main():
 
     filename = "cholesky.atrace.txt"
 
-    DIVIDER = 5000
+    #DIVIDER = 5000
     with open(filename, 'r') as file:
-        #for line in itertools.islice(file, 0, 1000):
         for line in file:
             instruction = line.split()
             if len(instruction) == 1:
@@ -360,14 +359,14 @@ def main():
             else:
                 if instruction[1] == "R":
                     address = int(instruction[2], 16)
-                    address = address % DIVIDER
+                    #address = address % DIVIDER
                     print(address)
                     readWord(address)
                     reads += 1
 
                 elif instruction[1] == "W":
                     address = int(instruction[2], 16)
-                    address = address % DIVIDER
+                    #address = address % DIVIDER
                     print(address)
                     rand_word = random.randint(1, 255)
                     writeWord(address, rand_word)
