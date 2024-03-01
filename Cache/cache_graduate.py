@@ -121,12 +121,9 @@ def readWord(address):
                     cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
 
         word = 0
-        # for x in range(4):
-        #     #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
-        #     word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
-        #
-        # #set address for write-back cache
-        # cache.set["set " + str(index)][block_index].address = address
+
+        #set address for write-back cache
+        cache.set["set " + str(index)][block_index].address = address
 
         if cache.associativity > 1:
             #screw tag queues, this works great too
@@ -150,10 +147,6 @@ def readWord(address):
                 else:
                     cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
 
-        #read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
-        # for x in range(CACHE_BLOCK_SIZE - 1):
-        #     cache.set["set " + str(index)][block_index].data[x] = memory[x + start]
-
         #set the valid bit for set i to true
         cache.set["set " + str(index)][block_index].valid = True
 
@@ -165,10 +158,6 @@ def readWord(address):
 
         #return the word at positions b, b+1, b+2, b+3 from the block in set i
         word = 0
-        # for x in range(4):
-        #     #read 4 bytes at a time, little endian conversion 256^0*mem[value0] + 256^1*mem[value1] + 256^2*mem[value2] ... etc.
-        #     #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
-        #     word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
         #set address for write-back cache
         cache.set["set " + str(index)][block_index].address = address
@@ -239,9 +228,6 @@ def writeWord(address, write_word):
                     cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
 
         word = 0
-        # for x in range(4):
-        #     # return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
-        #     word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
         #write to memory
         memory[address:address + 4] = [write_word & 255, (write_word >> 8) & 255, (write_word >> 16) & 255, (write_word >> 24) & 255]
@@ -286,10 +272,6 @@ def writeWord(address, write_word):
                     cache.set["set " + str(index)][x] = Block(CACHE_BLOCK_SIZE)
                 else:
                     cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
-
-        #read the blocksize bytes of memory from start to start+blocksize-1 into set i of the cache set the valid bit for set i to true
-        # for x in range(CACHE_BLOCK_SIZE - 1):
-        #     cache.set["set " + str(index)][block_index].data[x] = memory[x + start]
 
         # set the valid bit for set i to true
         cache.set["set " + str(index)][block_index].valid = True
@@ -349,7 +331,6 @@ def main():
 
     filename = "cholesky.atrace.txt"
 
-    #DIVIDER = 5000
     with open(filename, 'r') as file:
         for line in file:
             instruction = line.split()
@@ -359,14 +340,12 @@ def main():
             else:
                 if instruction[1] == "R":
                     address = int(instruction[2], 16)
-                    #address = address % DIVIDER
                     print(address)
                     readWord(address)
                     reads += 1
 
                 elif instruction[1] == "W":
                     address = int(instruction[2], 16)
-                    #address = address % DIVIDER
                     print(address)
                     rand_word = random.randint(1, 255)
                     writeWord(address, rand_word)
