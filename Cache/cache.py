@@ -9,8 +9,8 @@ CACHE_SIZE = 1024
 CACHE_BLOCK_SIZE = 64
 ADDRESS_LENGTH = 16
 ASSOCIATIVITY = 4
-#WRITETYPE = "write-back"
-WRITETYPE = "write-through"
+WRITETYPE = "write-back"
+#WRITETYPE = "write-through"
 
 #statistics declarations (it is nonsensical that i had to put global here but the program broke if i didn't, python plz fix)
 global reads
@@ -80,11 +80,11 @@ def readWord(address):
 
     #from addr, compute the tag t, index i and block offset b (use block_offset, block_address, tag, index etc.)
     tag = address >> cache.block_address
-    index = (address >> cache.block_offset) & cache.index
+    index = ((address >> cache.block_offset) & (1 << cache.index) - 1)
     block_offset = address & ((1 << cache.block_offset) - 1)
     block_index = 0
     #compute the range of the desired block in memory: start to start+blocksize-1
-    binary = (('{0:016b}'.format(address))[:-cache.block_offset]) + ("0" * cache.block_offset)
+    binary = ((('{0:0' + str(ADDRESS_LENGTH) + 'b}').format(address))[:-cache.block_offset]) + ("0" * cache.block_offset)
     start = int(binary, 2)
     end = start + (CACHE_BLOCK_SIZE - 1)
 
@@ -139,7 +139,7 @@ def readWord(address):
         #keep track of hits
         read_hits += 1
         print("read hit  [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
-        print('{0:016b}'.format(address))
+        print(('{0:0' + str(ADDRESS_LENGTH) + 'b}').format(address))
         print("")
         return word
     else: #cache miss
@@ -158,7 +158,8 @@ def readWord(address):
         #set the valid bit for set i to true
         cache.set["set " + str(index)][block_index].valid = True
 
-        cache.set["set " + str(index)][block_index].dirty = True
+        if cache.write == "write-back":
+            cache.set["set " + str(index)][block_index].dirty = True
 
         #set the tag set i to t
         cache.set["set " + str(index)][block_index].tag = tag
@@ -188,7 +189,7 @@ def readWord(address):
             print("evict tag " + str(cache.set["set " + str(index)][0].tag) + " in block_index 0")
         else:
             print("read miss [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
-        print('{0:016b}'.format(address))
+        print(('{0:0' + str(ADDRESS_LENGTH) + 'b}').format(address))
         print("")
         return word
 
@@ -202,7 +203,7 @@ def writeWord(address, write_word):
     block_offset = address & ((1 << cache.block_offset) - 1)
     block_index = 0
     #compute the range of the desired block in memory: start to start+blocksize-1
-    binary = (('{0:016b}'.format(address))[:-cache.block_offset]) + ("0" * cache.block_offset)
+    binary = ((('{0:0' + str(ADDRESS_LENGTH) + 'b}').format(address))[:-cache.block_offset]) + ("0" * cache.block_offset)
     start = int(binary, 2)
     end = start + (CACHE_BLOCK_SIZE - 1)
 
@@ -259,7 +260,7 @@ def writeWord(address, write_word):
         #keep track of hits
         write_hits += 1
         print("write hit  [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
-        print('{0:016b}'.format(address))
+        print(('{0:0' + str(ADDRESS_LENGTH) + 'b}').format(address))
 
         if cache.write == "write-through":
             print("write-through cache: write " + str(write_word) + " to memory[" + str(address) + "]")
@@ -294,7 +295,8 @@ def writeWord(address, write_word):
         # set the valid bit for set i to true
         cache.set["set " + str(index)][block_index].valid = True
 
-        cache.set["set " + str(index)][block_index].dirty = True
+        if cache.write == "write-back":
+            cache.set["set " + str(index)][block_index].dirty = True
 
         # set the tag set i to t
         cache.set["set " + str(index)][block_index].tag = tag
@@ -327,7 +329,7 @@ def writeWord(address, write_word):
             print("evict tag " + str(cache.set["set " + str(index)][0].tag) + " in block_index 0")
         else:
             print("write miss [address=" + str(address) + " tag=" + str(tag) + " index=" + str(index) + " block_offset=" + str(block_offset) + " block_index=" + str(block_index) + " : word=" + str(word) + " (" + str(start) + " - " + str(end) + ")]")
-        print('{0:016b}'.format(address))
+        print(('{0:0' + str(ADDRESS_LENGTH) + 'b}').format(address))
 
         if cache.write == "write-through":
             print("write-through cache: write " + str(write_word) + " to memory[" + str(address) + "]")
@@ -343,7 +345,6 @@ def writeWord(address, write_word):
         print("")
 
 def main():
-    #TODO: PART 2: change to allow for hexadecimal commands
     global reads
     global writes
 
