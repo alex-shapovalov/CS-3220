@@ -1,8 +1,8 @@
 #Alex Shapovalov
 #CS 5220
-#Programming Assignment #2, Cache
+#Programming Assignment #2, Cache Graduate
 
-import re
+import random
 
 CACHE_SIZE = 1024
 CACHE_BLOCK_SIZE = 64
@@ -121,12 +121,12 @@ def readWord(address):
                     cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
 
         word = 0
-        for x in range(4):
-            #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
-            word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
-
-        #set address for write-back cache
-        cache.set["set " + str(index)][block_index].address = address
+        # for x in range(4):
+        #     #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
+        #     word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
+        #
+        # #set address for write-back cache
+        # cache.set["set " + str(index)][block_index].address = address
 
         if cache.associativity > 1:
             #screw tag queues, this works great too
@@ -165,10 +165,10 @@ def readWord(address):
 
         #return the word at positions b, b+1, b+2, b+3 from the block in set i
         word = 0
-        for x in range(4):
-            #read 4 bytes at a time, little endian conversion 256^0*mem[value0] + 256^1*mem[value1] + 256^2*mem[value2] ... etc.
-            #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
-            word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
+        # for x in range(4):
+        #     #read 4 bytes at a time, little endian conversion 256^0*mem[value0] + 256^1*mem[value1] + 256^2*mem[value2] ... etc.
+        #     #return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
+        #     word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
         #set address for write-back cache
         cache.set["set " + str(index)][block_index].address = address
@@ -239,9 +239,9 @@ def writeWord(address, write_word):
                     cache.set["set " + str(index)][x] = cache.set["set " + str(index)][x + 1]
 
         word = 0
-        for x in range(4):
-            # return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
-            word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
+        # for x in range(4):
+        #     # return the word (the four bytes) at positions b, b+1, b+2, b+3 from the block in set i
+        #     word += (256 ** x) * cache.set["set " + str(index)][block_index].data[block_offset + x]
 
         #write to memory
         memory[address:address + 4] = [write_word & 255, (write_word >> 8) & 255, (write_word >> 16) & 255, (write_word >> 24) & 255]
@@ -347,28 +347,34 @@ def main():
     global reads
     global writes
 
-    filename = "part-two-addresses.txt"
+    filename = "cholesky.atrace.txt"
 
-    #old code for testing
+    DIVIDER = 5000
     with open(filename, 'r') as file:
+        #for line in itertools.islice(file, 0, 1000):
         for line in file:
-            #this is extremely lazy determination of what function is on each line (doesn't catch syntax errors etc.)
-            #but i'm not being tested on my ability to properly read in inputs from a file, so i don't really care
-            line = line.strip()
-            print(line.strip())
-            operation = line[0]
-            if (operation == 'r'):
-                reads += 1
-                values = [int(d) for d in re.findall(r'-?\d+', line)]
-                readWord(values[0])
-
-            elif (operation == 'w'):
-                writes += 1
-                values = [int(d) for d in re.findall(r'-?\d+', line)]
-                writeWord(values[0], values[1])
+            instruction = line.split()
+            if len(instruction) == 1:
+                pass
 
             else:
-               pass
+                if instruction[1] == "R":
+                    address = int(instruction[2], 16)
+                    address = address % DIVIDER
+                    print(address)
+                    readWord(address)
+                    reads += 1
+
+                elif instruction[1] == "W":
+                    address = int(instruction[2], 16)
+                    address = address % DIVIDER
+                    print(address)
+                    rand_word = random.randint(1, 255)
+                    writeWord(address, rand_word)
+                    writes += 1
+
+                else:
+                    pass
 
     #print statistics
     print("---------------------------------------------------------------------------------")
