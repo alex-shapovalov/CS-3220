@@ -15,7 +15,6 @@ f1: # interger division
   addi   t0, x0, 1   # set t0 to 1 for comparison
   slt    t1, a1, t0  # error check denominator
   beq    t1, t0, e   # jump to error
-  blt    a0, x0, e   # error
   addi   t0, x0, 0   # initialize q
   sw     t0, 8(s0)
 L0:
