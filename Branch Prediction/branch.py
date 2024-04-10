@@ -10,7 +10,7 @@ class Branch:
         self.total = self.numTaken + self.numSkipped
 
 def main():
-    branches = {}  # Dictionary to store address and its count
+    branches = {}
 
     filename = "curl1m.btrace.txt"
 
