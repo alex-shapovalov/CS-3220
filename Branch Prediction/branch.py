@@ -3,6 +3,6 @@
 #Programming Assignment #4, Branch Prediction
 
 def main():
-    i = 0
+    i = 1
 
 main()
