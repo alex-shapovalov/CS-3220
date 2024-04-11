@@ -117,6 +117,15 @@ def main():
         print(printArray[bits] + str('{:.2f}'.format((predicted / total) * 100)) + "% accurate")
         print("")
 
+        if (bits < 3):
+            branches = {}
+
+            taken = 0
+            skipped = 0
+            total = 0
+            prediction = 0
+            predicted = 0
+
     # totals
     print("unique branches: " + str(len(branches)) + ", total taken: " + str(taken) + ", total skipped: " + str(skipped) + ", total branches: " + str(total))
 
