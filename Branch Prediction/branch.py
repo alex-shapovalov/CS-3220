@@ -35,12 +35,14 @@ def main():
                 if (bits == 1):
                     prediction = branches[address]["previous"] #predict whatever the last value was
 
+                # alter prediction based on 2 bit prediction
                 elif (bits == 2):
                     if (branches[address]["previous"] in range(2, 3)):
                         prediction = 1
                     elif (branches[address]["previous"] in range(0, 1)):
                         prediction = 0
 
+                # alter prediction based on 3 bit prediction
                 elif (bits == 3):
                     if (branches[address]["previous"] in range(2, 8)):
                         prediction = 1
@@ -60,6 +62,7 @@ def main():
                         else:
                             branches[address].update({"previous": 0})
 
+                    # change based on bits
                     elif (bits == 2):
                         if (prediction == 0):
                             predicted += 1
@@ -67,6 +70,7 @@ def main():
                         else:
                             branches[address]["previous"] = max(branches[address]["previous"] - 1, 0)
 
+                    # change based on bits
                     elif (bits == 3):
                         if (prediction == 0):
                             predicted += 1
@@ -81,6 +85,7 @@ def main():
 
                     skipped += 1
 
+                    # add to total
                     branches[address]["total"] = branches[address]["skipped"] + branches[address]["taken"]
 
                 else: # taken
@@ -111,6 +116,7 @@ def main():
 
                     taken += 1
 
+                    # add to total
                     branches[address]["total"] = branches[address]["skipped"] + branches[address]["taken"]
 
                 total += 1
