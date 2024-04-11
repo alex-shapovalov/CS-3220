@@ -2,14 +2,8 @@
 #CS 5220
 #Programming Assignment #4, Branch Prediction
 
-class Branch:
-    def __init__(self, address):
-        self.address = address
-        self.numTaken = 0
-        self.numSkipped = 0
-        self.total = self.numTaken + self.numSkipped
-
 def main():
+    #create branch dictionary (array was not a good idea)
     branches = {}
 
     filename = "curl1m.btrace.txt"
@@ -17,27 +11,25 @@ def main():
     with open(filename, 'r') as file:
         for line in file:
             instruction = line.split()
+
             address = instruction[0]
+
             value = int(instruction[1])
 
+            # if branch is new, add to dictionary
             if address not in branches:
-                branches[address] = {"taken": 0, "skipped": 0}  # Initialize with counts
+                branches[address] = {"taken": 0, "skipped": 0, "total": 0}
 
+            # add tallies based on branch taken / not taken
             if value == 0:
                 branches[address]["skipped"] += 1
+                branches[address]["total"] = branches[address]["skipped"] + branches[address]["taken"]
             else:
                 branches[address]["taken"] += 1
+                branches[address]["total"] = branches[address]["skipped"] + branches[address]["taken"]
 
-    for address, counts in branches.items():
-        counts["total"] = counts["taken"] + counts["skipped"]
-
-    for address, counts in branches.items():
-        print(f"Address: {address}, Taken: {counts['taken']}, Skipped: {counts['skipped']}")
-
-    #if branch is new, add to array branches
-
-    #else add another tally to that branch in the array
-
+    for address, i in branches.items():
+        print("address: " + str(address) + ", taken: " + str(i['taken']) + ", skipped: " + str(i['skipped']) + ", total: " + str(i['total']))
 
     #do calculations in the array
 
