@@ -47,7 +47,7 @@ def main():
                     elif (branches[address]["previous"] in range(0, 1)):
                         prediction = 0
 
-                else:
+                else: # 0 bit prediction
                     prediction = 0
 
                 # add tallies based on branch taken / not taken
