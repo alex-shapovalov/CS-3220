@@ -7,7 +7,7 @@ def main():
     branches = {}
 
     filename = "curl1m.btrace.txt"
-    bits = 0 # 0, 1, 2, or 3. this is N
+    #bits = 0 # 0, 1, 2, or 3. this is N
 
     taken = 0
     skipped = 0
