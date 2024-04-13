@@ -37,14 +37,14 @@ def main():
 
                 # alter prediction based on 2 bit prediction
                 elif (bits == 2):
-                    if (branches[address]["previous"] in range(2, 3)):
+                    if (branches[address]["previous"] in range(2, 4)):
                         prediction = 1
                     elif (branches[address]["previous"] in range(0, 1)):
                         prediction = 0
 
                 # alter prediction based on 3 bit prediction
                 elif (bits == 3):
-                    if (branches[address]["previous"] in range(2, 8)):
+                    if (branches[address]["previous"] in range(2, 9)):
                         prediction = 1
                     elif (branches[address]["previous"] in range(0, 1)):
                         prediction = 0
@@ -58,9 +58,7 @@ def main():
                     if (bits == 1): # single bit
                         if (prediction == 0):
                             predicted += 1
-                            branches[address].update({"previous": 1})
-                        else:
-                            branches[address].update({"previous": 0})
+                        branches[address].update({"previous": 0})
 
                     # change based on bits
                     elif (bits == 2):
@@ -81,7 +79,7 @@ def main():
                     else:
                         if (prediction == 0):
                             predicted += 1
-                            branches[address].update({"previous": 1})
+                            branches[address].update({"previous": 0})
 
                     skipped += 1
 
@@ -93,9 +91,7 @@ def main():
                     if (bits == 1):  # single bit
                         if (prediction == 1):
                             predicted += 1
-                            branches[address].update({"previous": 1})
-                        else:
-                            branches[address].update({"previous": 0})
+                        branches[address].update({"previous": 1})
 
                     elif (bits == 2):
                         if (prediction == 1):
