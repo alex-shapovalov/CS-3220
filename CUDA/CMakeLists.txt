@@ -7,4 +7,4 @@ set(CMAKE_CUDA_ARCHITECTURES 86)
 
 include_directories("C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.4/include")
 
-add_executable(CUDA cuda.cpp)
+add_executable(CUDA cuda.c)
