@@ -8,12 +8,16 @@
 
 const int BLOCK_SIZE = 16;
 
+//block number = n / threads per block
+
 __global__
 void MxV( float *M, float *x, float *y, int n) {
     const int tidx = blockDim.x * blockIdx.x + threadIdx.x;
     const int tidy = blockDim.y * blockIdx.y + threadIdx.y;
     if (tidx < n && tidy < n) {
         z[tidx*n + tidy] = x[tidx*n + tidy] + y[tidx*n + tidy];
+        //tidx = m[0] * x[0] + m[1] * x[1] + m[2] * x[2]
+        //no partial sums / local cache
 }
 
 int main() {
@@ -31,6 +35,9 @@ int main() {
     blocks.y = (N + BLOCK_SIZE – 1) / BLOCK_SIZE;
     add2D<<<blocks, threadsPerBlock>>>( d_x, d_y, d_z, N );
     cudaDeviceSynchronize(); // this blocks until the device has completed all requested tasks
+
+    //vector norms
+    //compare results?
 
 
     return 0;
