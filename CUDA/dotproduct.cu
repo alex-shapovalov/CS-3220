@@ -1,6 +1,6 @@
 //Alex Shapovalov
 //CS 3220
-//Programming Assignment #5, CUDA
+//Programming Assignment #5, CUDA Dot Product
 
 #include <stdio.h>
 #include <stdlib.h>
