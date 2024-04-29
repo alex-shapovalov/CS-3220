@@ -52,6 +52,11 @@ int main() {
         V[i] = drand48();
     }
 
+    //time without memory
+    //------------------------------------------------------------------------------------------------------------------
+
+
+
     cudaMemcpy( dev_U, U, N*sizeof(float), cudaMemcpyHostToDevice );
     cudaMemcpy( dev_V, V, N*sizeof(float), cudaMemcpyHostToDevice );
 
@@ -64,14 +69,48 @@ int main() {
 
     cudaEventRecord(stop, 0);
     cudaEventSynchronize(stop);
-    float elapsedTimeGPU;
-    cudaEventElapsedTime(&elapsedTimeGPU, start, stop);
-    printf("elapsed time GPU: %.4f ms\n", elapsedTimeGPU);
+    float elapsedTimeGPUNoMem;
+    cudaEventElapsedTime(&elapsedTimeGPUNoMem, start, stop);
+    printf("elapsed time GPU with no memory copies: %.4f ms\n", elapsedTimeGPUNoMem);
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
 
     cudaDeviceSynchronize(); // wait for GPU threads to complete; again, not necessary but good pratice
     cudaMemcpy( partialSum, dev_partialSum, numBlocks*sizeof(float), cudaMemcpyDeviceToHost );
+
+
+
+    //time with memory
+    //------------------------------------------------------------------------------------------------------------------
+
+
+
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start, 0);
+
+    cudaMemcpy( dev_U, U, N*sizeof(float), cudaMemcpyHostToDevice );
+    cudaMemcpy( dev_V, V, N*sizeof(float), cudaMemcpyHostToDevice );
+
+    dotp<<<numBlocks, threadsPerBlock, BLOCK_SIZE * sizeof(float)>>>( dev_U, dev_V, dev_partialSum, N );
+
+    cudaDeviceSynchronize(); // wait for GPU threads to complete; again, not necessary but good pratice
+    cudaMemcpy( partialSum, dev_partialSum, numBlocks*sizeof(float), cudaMemcpyDeviceToHost );
+
+    cudaEventRecord(stop, 0);
+    cudaEventSynchronize(stop);
+    float elapsedTimeGPUMem;
+    cudaEventElapsedTime(&elapsedTimeGPUMem, start, stop);
+    printf("elapsed time GPU with memory copies: %.4f ms\n", elapsedTimeGPUMem);
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
+
+
+
+    //------------------------------------------------------------------------------------------------------------------
+
+
 
     // finish up on the CPU side
     float gpuResult = 0.0;
