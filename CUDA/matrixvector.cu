@@ -35,7 +35,6 @@ int main() {
     }
 
     float *d_x, *d_y, *d_z;
-    size_t pitch;
     cudaMalloc((void**) &d_x, N*N*sizeof(float));
     cudaMalloc((void**) &d_y, N*N*sizeof(float));
     cudaMalloc((void**) &d_z, N*N*sizeof(float));
@@ -76,10 +75,10 @@ int main() {
     //time with memory
     //------------------------------------------------------------------------------------------------------------------
 
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-    cudaEventRecord(start, 0);
+    cudaEvent_t start1, stop1;
+    cudaEventCreate(&start1);
+    cudaEventCreate(&stop1);
+    cudaEventRecord(start1, 0);
 
     cudaMemcpy( d_x, x, N*N*sizeof(float), cudaMemcpyHostToDevice );
     cudaMemcpy( d_y, y, N*N*sizeof(float), cudaMemcpyHostToDevice );
@@ -89,13 +88,13 @@ int main() {
     cudaDeviceSynchronize();
     cudaMemcpy( z, d_z, N*N*sizeof(float), cudaMemcpyDeviceToHost );
 
-    cudaEventRecord(stop, 0);
-    cudaEventSynchronize(stop);
+    cudaEventRecord(stop1, 0);
+    cudaEventSynchronize(stop1);
     float elapsedTimeGPUMem;
-    cudaEventElapsedTime(&elapsedTimeGPUMem, start, stop);
+    cudaEventElapsedTime(&elapsedTimeGPUMem, start1, stop1);
     printf("elapsed time GPU with memory copies: %.4f ms\n", elapsedTimeGPUMem);
-    cudaEventDestroy(start);
-    cudaEventDestroy(stop);
+    cudaEventDestroy(start1);
+    cudaEventDestroy(stop1);
 
 
 
